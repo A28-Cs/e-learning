@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-paper text-ink font-body antialiased;
+  background-image: radial-gradient(
+      circle at 15% 10%,
+      rgba(11, 122, 85, 0.05),
+      transparent 40%
+    ),
+    radial-gradient(circle at 85% 90%, rgba(233, 161, 59, 0.06), transparent 45%);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  @apply font-display;
+}
+
+.card {
+  @apply rounded-2xl border border-ink/10 bg-white shadow-card;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.btn-primary {
+  @apply btn bg-moss-500 text-white hover:bg-moss-600 hover:shadow-lift active:scale-[.98];
+}
+
+.btn-ghost {
+  @apply btn border border-ink/15 bg-transparent text-ink hover:border-moss-500 hover:text-moss-600;
+}
+
+.btn-amber {
+  @apply btn bg-amber-500 text-ink hover:bg-amber-600 active:scale-[.98];
+}
+
+.btn-danger {
+  @apply btn border border-red-200 bg-red-50 text-red-700 hover:bg-red-100;
+}
+
+.input {
+  @apply w-full rounded-xl border border-ink/15 bg-white px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-ink/35 focus:border-moss-500 focus:ring-2 focus:ring-moss-500/20;
+}
+
+.label {
+  @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink/60;
+}
+
+.chip {
+  @apply inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise {
+  animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+mux-player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 1rem;
+  overflow: hidden;
+  --media-primary-color: #0b7a55;
+}

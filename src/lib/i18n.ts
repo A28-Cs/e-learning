@@ -1,0 +1,147 @@
+export type Lang = "ar" | "en";
+
+const dict = {
+  // ---- brand / nav ----
+  brand: { ar: "أكاديمية تقاطُع", en: "Taqato Academy" },
+  navHome: { ar: "الرئيسية", en: "Home" },
+  navCourses: { ar: "الكورسات", en: "Courses" },
+  navMyCourses: { ar: "كورساتي", en: "My Courses" },
+  navAdmin: { ar: "لوحة التحكم", en: "Control Panel" },
+  login: { ar: "تسجيل الدخول", en: "Log in" },
+  register: { ar: "إنشاء حساب", en: "Sign up" },
+  logout: { ar: "تسجيل الخروج", en: "Log out" },
+
+  // ---- home ----
+  heroKicker: { ar: "منصّة تعليمية عربية", en: "An Arabic-first learning platform" },
+  heroTitle1: { ar: "اتعلّم بجد،", en: "Learn deeply," },
+  heroTitle2: { ar: "على مهلك.", en: "at your pace." },
+  heroSub: {
+    ar: "كورسات مصوّرة بجودة عالية، تتفرّج عليها في أي وقت ومن أي مكان — والتقدّم كله محفوظ لحسابك.",
+    en: "High-quality video courses you can watch anytime, anywhere — all tied to your account.",
+  },
+  browseCourses: { ar: "تصفّح الكورسات", en: "Browse courses" },
+  allCategories: { ar: "الكل", en: "All" },
+  noCourses: { ar: "لسه مفيش كورسات منشورة.", en: "No published courses yet." },
+  lessonsCount: { ar: "درس", en: "lessons" },
+  free: { ar: "مجاني", en: "Free" },
+  viewCourse: { ar: "تفاصيل الكورس", en: "View course" },
+
+  // ---- auth ----
+  name: { ar: "الاسم", en: "Name" },
+  email: { ar: "البريد الإلكتروني", en: "Email" },
+  password: { ar: "كلمة المرور", en: "Password" },
+  loginTitle: { ar: "أهلاً بيك تاني 👋", en: "Welcome back 👋" },
+  registerTitle: { ar: "يلا نبدأ رحلتك", en: "Start your journey" },
+  noAccount: { ar: "معندكش حساب؟", en: "No account?" },
+  haveAccount: { ar: "عندك حساب بالفعل؟", en: "Already have an account?" },
+  authFailed: { ar: "حصلت مشكلة، اتأكد من البيانات وحاول تاني.", en: "Something went wrong — check your details and try again." },
+
+  // ---- course page ----
+  courseContent: { ar: "محتوى الكورس", en: "Course content" },
+  enrolled: { ar: "مشترك ✓", en: "Enrolled ✓" },
+  haveCode: { ar: "معاك كود تفعيل؟", en: "Have an activation code?" },
+  codePlaceholder: { ar: "اكتب الكود هنا", en: "Enter your code" },
+  activate: { ar: "تفعيل", en: "Activate" },
+  codeSuccess: { ar: "تم تفعيل الكورس! 🎉", en: "Course activated! 🎉" },
+  codeInvalid: { ar: "الكود غير صحيح أو مستخدم قبل كده.", en: "Invalid or already-used code." },
+  loginToActivate: { ar: "سجّل دخولك الأول عشان تفعّل الكورس", en: "Log in first to activate this course" },
+  howToBuy: {
+    ar: "للاشتراك في الكورس، تواصل معانا وهتستلم كود تفعيل تدخله هنا.",
+    en: "To enroll, contact us and you will receive an activation code to enter here.",
+  },
+  watchNow: { ar: "اتفرّج دلوقتي", en: "Watch now" },
+  freeLesson: { ar: "درس مجاني", en: "Free lesson" },
+  locked: { ar: "مقفول", en: "Locked" },
+  preparing: { ar: "جاري التجهيز…", en: "Processing…" },
+
+  // ---- watch ----
+  backToCourse: { ar: "الرجوع للكورس", en: "Back to course" },
+  notEntitled: { ar: "الدرس ده متاح للمشتركين بس. فعّل الكورس بكود الأول.", en: "This lesson is for enrolled students. Activate the course first." },
+  nextLesson: { ar: "الدرس التالي", en: "Next lesson" },
+
+  // ---- my courses ----
+  myCoursesTitle: { ar: "كورساتي", en: "My Courses" },
+  noEnrollments: { ar: "لسه مشتركتش في أي كورس.", en: "You are not enrolled in any course yet." },
+
+  // ---- misc ----
+  loading: { ar: "ثواني…", en: "Loading…" },
+  save: { ar: "حفظ", en: "Save" },
+  cancel: { ar: "إلغاء", en: "Cancel" },
+  delete: { ar: "حذف", en: "Delete" },
+  edit: { ar: "تعديل", en: "Edit" },
+  confirmDelete: { ar: "متأكد من الحذف؟ مفيش رجوع.", en: "Delete permanently? This cannot be undone." },
+  egp: { ar: "ج.م", en: "EGP" },
+
+  // ---- payments ----
+  buyNow: { ar: "اشتري الكورس", en: "Buy this course" },
+  orDivider: { ar: "أو", en: "or" },
+  redirectingToPay: { ar: "بنحوّلك لصفحة الدفع…", en: "Redirecting to payment…" },
+  payFailed: { ar: "معرفناش نبدأ عملية الدفع، جرب تاني.", en: "Could not start the payment, try again." },
+  paymentChecking: { ar: "بنتأكد من عملية الدفع…", en: "Verifying your payment…" },
+  paymentSuccessTitle: { ar: "تم الدفع والكورس اتفعّل!", en: "Payment complete — course activated!" },
+  paymentFailedTitle: { ar: "الدفع ما تمّش", en: "Payment failed" },
+  paymentFailedMsg: {
+    ar: "مفيش فلوس اتخصمت غالبًا. جرب تاني أو استخدم كود تفعيل.",
+    en: "You were most likely not charged. Try again or use an activation code.",
+  },
+  goToCourse: { ar: "روح للكورس", en: "Go to course" },
+  adminOrders: { ar: "الطلبات", en: "Orders" },
+  paid: { ar: "مدفوع", en: "Paid" },
+  pendingOrder: { ar: "معلّق", en: "Pending" },
+  failedOrder: { ar: "فشل", en: "Failed" },
+  student: { ar: "الطالب", en: "Student" },
+  date: { ar: "التاريخ", en: "Date" },
+
+  // ---- admin ----
+  adminDashboard: { ar: "نظرة عامة", en: "Overview" },
+  adminCourses: { ar: "الكورسات", en: "Courses" },
+  adminCategories: { ar: "الفئات", en: "Categories" },
+  adminCodes: { ar: "أكواد التفعيل", en: "Activation Codes" },
+  adminOnly: { ar: "الصفحة دي للأدمن بس.", en: "This page is admins-only." },
+  statCourses: { ar: "كورس", en: "Courses" },
+  statStudents: { ar: "طالب", en: "Students" },
+  statCodesUsed: { ar: "كود مستخدم", en: "Codes used" },
+  statLessons: { ar: "درس", en: "Lessons" },
+  newCourse: { ar: "كورس جديد", en: "New course" },
+  titleAr: { ar: "العنوان (عربي)", en: "Title (Arabic)" },
+  titleEn: { ar: "العنوان (إنجليزي)", en: "Title (English)" },
+  descAr: { ar: "الوصف (عربي)", en: "Description (Arabic)" },
+  descEn: { ar: "الوصف (إنجليزي)", en: "Description (English)" },
+  category: { ar: "الفئة", en: "Category" },
+  price: { ar: "السعر", en: "Price" },
+  thumbnail: { ar: "صورة الغلاف", en: "Cover image" },
+  uploadImage: { ar: "ارفع صورة", en: "Upload image" },
+  changeImage: { ar: "غيّر الصورة", en: "Change image" },
+  published: { ar: "منشور", en: "Published" },
+  draft: { ar: "مسودة", en: "Draft" },
+  lessons: { ar: "الدروس", en: "Lessons" },
+  addLesson: { ar: "إضافة درس", en: "Add lesson" },
+  lessonVideo: { ar: "فيديو الدرس", en: "Lesson video" },
+  uploadVideo: { ar: "ارفع الفيديو على MUX", en: "Upload video to MUX" },
+  uploading: { ar: "جاري الرفع…", en: "Uploading…" },
+  processingVideo: { ar: "MUX بيجهّز الفيديو…", en: "MUX is processing the video…" },
+  videoReady: { ar: "الفيديو جاهز ✓", en: "Video ready ✓" },
+  freeLessonToggle: { ar: "درس مجاني (معاينة)", en: "Free preview lesson" },
+  newCategory: { ar: "فئة جديدة", en: "New category" },
+  nameAr: { ar: "الاسم (عربي)", en: "Name (Arabic)" },
+  nameEn: { ar: "الاسم (إنجليزي)", en: "Name (English)" },
+  generateCodes: { ar: "توليد أكواد", en: "Generate codes" },
+  codesCount: { ar: "عدد الأكواد", en: "Number of codes" },
+  forCourse: { ar: "للكورس", en: "For course" },
+  code: { ar: "الكود", en: "Code" },
+  status: { ar: "الحالة", en: "Status" },
+  used: { ar: "مستخدم", en: "Used" },
+  available: { ar: "متاح", en: "Available" },
+  usedBy: { ar: "استخدمه", en: "Used by" },
+  copy: { ar: "نسخ", en: "Copy" },
+  copied: { ar: "اتنسخ ✓", en: "Copied ✓" },
+  noItems: { ar: "مفيش عناصر لسه.", en: "Nothing here yet." },
+  selectCourse: { ar: "اختار كورس", en: "Select a course" },
+  saveFirst: { ar: "احفظ الكورس الأول وبعدين ضيف الدروس.", en: "Save the course first, then add lessons." },
+} as const;
+
+export type DictKey = keyof typeof dict;
+
+export function translate(key: DictKey, lang: Lang): string {
+  return dict[key]?.[lang] ?? key;
+}
