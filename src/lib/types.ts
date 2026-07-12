@@ -56,6 +56,31 @@ export interface Order {
   paidAt: number | null;
 }
 
+export interface PaymentSettings {
+  vodafoneCash: string;
+  instapay: string;
+  enabled: boolean;
+}
+
+export interface PaymentRequest {
+  id: string;
+  uid: string;
+  email: string;
+  name: string;
+  courseId: string;
+  courseTitleAr: string;
+  courseTitleEn: string;
+  amount: number;
+  method: "vodafone_cash" | "instapay";
+  transactionRef: string;
+  receiptUrl: string;
+  status: "pending" | "approved" | "rejected";
+  adminNote: string | null;
+  createdAt: number;
+  reviewedAt: number | null;
+  reviewedBy: string | null;
+}
+
 export interface ActivationCode {
   code: string;
   courseId: string;

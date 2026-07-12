@@ -92,6 +92,30 @@ const dict = {
   student: { ar: "الطالب", en: "Student" },
   date: { ar: "التاريخ", en: "Date" },
 
+  // ---- manual payment (Vodafone Cash / InstaPay) ----
+  payManual: { ar: "ادفع بفودافون كاش / إنستاباي", en: "Pay via Vodafone Cash / InstaPay" },
+  vodafoneCash: { ar: "فودافون كاش", en: "Vodafone Cash" },
+  instapay: { ar: "إنستاباي", en: "InstaPay" },
+  sendTo: { ar: "حوّل المبلغ إلى", en: "Send the amount to" },
+  transactionRef: { ar: "رقم العملية / آخر ٤ أرقام", en: "Transaction reference" },
+  uploadReceipt: { ar: "ارفع صورة إثبات التحويل", en: "Upload receipt screenshot" },
+  submitPaymentRequest: { ar: "أرسل للمراجعة", en: "Submit for review" },
+  paymentPending: {
+    ar: "طلب الدفع بتاعك قيد المراجعة، هيتفعّل الكورس بمجرد التأكيد.",
+    en: "Your payment is under review — the course will unlock once confirmed.",
+  },
+  paymentRejected: { ar: "الطلب اتراجع ومتقبلش.", en: "Your request was rejected." },
+  rejectionReason: { ar: "السبب", en: "Reason" },
+  adminPaymentRequests: { ar: "طلبات الدفع", en: "Payment Requests" },
+  adminSettings: { ar: "إعدادات الدفع", en: "Payment Settings" },
+  approve: { ar: "موافقة", en: "Approve" },
+  reject: { ar: "رفض", en: "Reject" },
+  reference: { ar: "رقم العملية", en: "Reference" },
+  paymentSettingsEnabled: { ar: "فعّل الدفع اليدوي", en: "Enable manual payment" },
+  vodafoneCashNumber: { ar: "رقم فودافون كاش", en: "Vodafone Cash number" },
+  instapayHandle: { ar: "معرّف إنستاباي (InstaPay)", en: "InstaPay handle" },
+  settingsSaved: { ar: "تم الحفظ ✓", en: "Saved ✓" },
+
   // ---- admin ----
   adminDashboard: { ar: "نظرة عامة", en: "Overview" },
   adminCourses: { ar: "الكورسات", en: "Courses" },
