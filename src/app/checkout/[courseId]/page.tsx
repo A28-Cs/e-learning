@@ -25,7 +25,6 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
 
   const [method, setMethod] = useState<Method>("vodafone_cash");
-  const [transactionRef, setTransactionRef] = useState("");
   const [receiptUrl, setReceiptUrl] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -60,7 +59,7 @@ export default function CheckoutPage() {
     try {
       await api("/api/payment-requests", {
         method: "POST",
-        body: { courseId, method, transactionRef, receiptUrl },
+        body: { courseId, method, receiptUrl },
       });
       setSubmitted(true);
     } catch (err) {
@@ -221,29 +220,12 @@ export default function CheckoutPage() {
             </div>
           </section>
 
-          {/* Steps 2 + 3 — proof */}
+          {/* Step 2 — proof of transfer */}
           <form onSubmit={submit} className="card space-y-6 p-6">
             <div>
               <div className="flex items-center gap-3">
                 <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-moss-500 font-display text-sm font-bold text-white">
                   2
-                </span>
-                <h2 className="font-bold">{t("checkoutStep2")}</h2>
-              </div>
-              <input
-                className="input mt-4"
-                dir="ltr"
-                placeholder={t("transactionRef")}
-                value={transactionRef}
-                onChange={(e) => setTransactionRef(e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center gap-3">
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-moss-500 font-display text-sm font-bold text-white">
-                  3
                 </span>
                 <h2 className="font-bold">{t("checkoutStep3")}</h2>
               </div>
@@ -256,7 +238,7 @@ export default function CheckoutPage() {
 
             <button
               className="btn-primary w-full !py-3.5 !text-base"
-              disabled={busy || !transactionRef || !receiptUrl}
+              disabled={busy || !receiptUrl}
             >
               {busy ? t("loading") : t("submitPaymentRequest")}
             </button>

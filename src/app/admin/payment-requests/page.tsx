@@ -84,8 +84,12 @@ export default function AdminPaymentRequestsPage() {
                   {r.email}
                 </p>
                 <p className="mt-0.5 text-xs text-ink/50">
-                  {r.method === "vodafone_cash" ? t("vodafoneCash") : t("instapay")} ·{" "}
-                  {t("reference")}: <span dir="ltr">{r.transactionRef}</span>
+                  {r.method === "vodafone_cash" ? t("vodafoneCash") : t("instapay")}
+                  {r.transactionRef && (
+                    <>
+                      {" "}· {t("reference")}: <span dir="ltr">{r.transactionRef}</span>
+                    </>
+                  )}
                 </p>
               </div>
               <p className="font-display text-lg font-bold text-moss-600" dir="ltr">

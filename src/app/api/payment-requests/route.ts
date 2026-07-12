@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (method !== "vodafone_cash" && method !== "instapay") {
       return Response.json({ error: "bad_method" }, { status: 400 });
     }
-    if (!transactionRef || !receiptUrl) {
+    if (!receiptUrl) {
       return Response.json({ error: "missing_fields" }, { status: 400 });
     }
 
