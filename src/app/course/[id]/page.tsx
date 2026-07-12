@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth, useLang } from "@/context/AppProviders";
 import { api } from "@/lib/apiClient";
-import PaymentRequestBox from "@/components/PaymentRequestBox";
+import CheckoutButton from "@/components/CheckoutButton";
 import type { Course, Lesson } from "@/lib/types";
 
 interface CourseResponse {
@@ -202,7 +202,7 @@ export default function CoursePage() {
                       </div>
                     </>
                   )}
-                  <PaymentRequestBox courseId={course.id} user={user} />
+                  {course.price > 0 && <CheckoutButton courseId={course.id} user={user} />}
                   <p className="mt-4 text-sm leading-relaxed text-ink/60">{t("howToBuy")}</p>
                   <form onSubmit={redeem} className="mt-4 space-y-2">
                     <label className="label">{t("haveCode")}</label>
