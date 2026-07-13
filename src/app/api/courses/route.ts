@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
       currency: String(body.currency ?? "EGP"),
       thumbnail: String(body.thumbnail ?? ""),
       published: Boolean(body.published ?? false),
+      featured: Boolean(body.featured ?? false),
       lessonsCount: 0,
       createdAt: Date.now(),
     };

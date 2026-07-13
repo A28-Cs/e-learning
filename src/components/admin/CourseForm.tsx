@@ -23,6 +23,7 @@ export default function CourseForm({ course }: { course?: Course }) {
     price: course?.price ?? 0,
     thumbnail: course?.thumbnail ?? "",
     published: course?.published ?? false,
+    featured: course?.featured ?? false,
   });
 
   useEffect(() => {
@@ -132,7 +133,7 @@ export default function CourseForm({ course }: { course?: Course }) {
             onChange={(e) => set("price", Number(e.target.value))}
           />
         </div>
-        <div className="flex items-end pb-1">
+        <div className="flex flex-col justify-end gap-2 pb-1">
           <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold">
             <input
               type="checkbox"
@@ -141,6 +142,15 @@ export default function CourseForm({ course }: { course?: Course }) {
               className="h-4.5 w-4.5 accent-moss-500"
             />
             {t("published")}
+          </label>
+          <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold">
+            <input
+              type="checkbox"
+              checked={form.featured}
+              onChange={(e) => set("featured", e.target.checked)}
+              className="h-4.5 w-4.5 accent-amber-500"
+            />
+            ★ {t("featuredToggle")}
           </label>
         </div>
       </div>

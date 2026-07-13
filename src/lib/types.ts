@@ -16,6 +16,7 @@ export interface Course {
   currency: string;
   thumbnail: string;
   published: boolean;
+  featured: boolean;
   lessonsCount: number;
   createdAt: number;
 }
@@ -79,6 +80,17 @@ export interface PaymentRequest {
   createdAt: number;
   reviewedAt: number | null;
   reviewedBy: string | null;
+}
+
+export interface SecurityEvent {
+  id: string;
+  uid: string;
+  email: string;
+  type: "screenshot" | "record";
+  courseId: string;
+  lessonId: string;
+  seen: boolean;
+  createdAt: number;
 }
 
 export interface ActivationCode {

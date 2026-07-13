@@ -129,6 +129,38 @@ const dict = {
   instapayHandle: { ar: "معرّف إنستاباي (InstaPay)", en: "InstaPay handle" },
   settingsSaved: { ar: "تم الحفظ ✓", en: "Saved ✓" },
 
+  // ---- featured / catalog ----
+  featuredCourses: { ar: "كورسات مميزة", en: "Featured courses" },
+  featured: { ar: "مميز", en: "Featured" },
+  featuredToggle: { ar: "كورس مميز (يظهر في المقدمة)", en: "Featured (shown at the top)" },
+  browseByCategory: { ar: "الفئات", en: "Categories" },
+  close: { ar: "إغلاق", en: "Close" },
+
+  // ---- students admin ----
+  adminStudents: { ar: "الطلبة", en: "Students" },
+  studentProfile: { ar: "ملف الطالب", en: "Student profile" },
+  joinedAt: { ar: "تاريخ التسجيل", en: "Joined" },
+  enrollments: { ar: "الكورسات المشترك فيها", en: "Enrolled courses" },
+  transactions: { ar: "المعاملات المالية", en: "Transactions" },
+  grantCourse: { ar: "إضافة كورس للطالب", en: "Grant a course" },
+  grant: { ar: "إضافة", en: "Grant" },
+  revoke: { ar: "إلغاء الاشتراك", en: "Revoke" },
+  viaCode: { ar: "كود تفعيل", en: "Activation code" },
+  viaManual: { ar: "دفع يدوي", en: "Manual payment" },
+  searchStudents: { ar: "ابحث بالاسم أو الإيميل…", en: "Search by name or email…" },
+  receipt: { ar: "الإيصال", en: "Receipt" },
+
+  // ---- notifications / security ----
+  adminSecurity: { ar: "الحماية", en: "Security" },
+  securityEvents: { ar: "أحداث الحماية", en: "Security events" },
+  notifPayment: { ar: "طلب دفع جديد وصل! 💰", en: "New payment request! 💰" },
+  notifSecurity: { ar: "محاولة تصوير محتوى! 🚨", en: "Capture attempt detected! 🚨" },
+  enableNotifs: { ar: "اضغط الجرس لتفعيل الإشعارات", en: "Click the bell to enable notifications" },
+  eventScreenshot: { ar: "محاولة سكرين شوت", en: "Screenshot attempt" },
+  eventRecord: { ar: "اشتباه تسجيل شاشة", en: "Possible screen recording" },
+  captureBlocked: { ar: "التصوير غير مسموح — المحتوى محمي وتم إبلاغ الإدارة", en: "Capturing is not allowed — this content is protected and admins were notified" },
+  protectedFor: { ar: "محتوى مرخّص لـ", en: "Licensed to" },
+
   // ---- admin ----
   adminDashboard: { ar: "نظرة عامة", en: "Overview" },
   adminCourses: { ar: "الكورسات", en: "Courses" },

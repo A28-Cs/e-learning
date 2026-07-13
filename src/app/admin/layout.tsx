@@ -30,6 +30,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/courses", label: t("adminCourses"), icon: "▤" },
     { href: "/admin/categories", label: t("adminCategories"), icon: "◈" },
     { href: "/admin/codes", label: t("adminCodes"), icon: "⌘" },
+    { href: "/admin/students", label: t("adminStudents"), icon: "◉" },
+    { href: "/admin/security", label: t("adminSecurity"), icon: "◬" },
     { href: "/admin/orders", label: t("adminOrders"), icon: "◎" },
     { href: "/admin/payment-requests", label: t("adminPaymentRequests"), icon: "🧾" },
     { href: "/admin/settings", label: t("adminSettings"), icon: "⚙" },

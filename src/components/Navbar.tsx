@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth, useLang } from "@/context/AppProviders";
+import AdminNotifications from "@/components/AdminNotifications";
 
 export default function Navbar() {
   const { t, lang, setLang } = useLang();
@@ -44,6 +45,7 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {profile?.isAdmin && <AdminNotifications />}
           <button
             onClick={() => setLang(lang === "ar" ? "en" : "ar")}
             className="chip border border-ink/15 text-xs font-bold hover:border-moss-500 hover:text-moss-600"

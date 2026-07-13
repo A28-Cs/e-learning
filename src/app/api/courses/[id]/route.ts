@@ -65,6 +65,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
     if (body.price !== undefined) patch.price = Number(body.price);
     if (body.published !== undefined) patch.published = Boolean(body.published);
+    if (body.featured !== undefined) patch.featured = Boolean(body.featured);
     await adminDb.collection("courses").doc(params.id).update(patch);
     return Response.json({ ok: true });
   } catch (err) {
