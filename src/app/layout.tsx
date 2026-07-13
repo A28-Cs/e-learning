@@ -3,6 +3,7 @@ import { Alexandria, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/context/AppProviders";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const display = Alexandria({
   subsets: ["arabic", "latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AppProviders>
           <Navbar />
           <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+          <Footer />
         </AppProviders>
       </body>
     </html>

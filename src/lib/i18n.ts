@@ -207,6 +207,35 @@ const dict = {
   noItems: { ar: "مفيش عناصر لسه.", en: "Nothing here yet." },
   selectCourse: { ar: "اختار كورس", en: "Select a course" },
   saveFirst: { ar: "احفظ الكورس الأول وبعدين ضيف الدروس.", en: "Save the course first, then add lessons." },
+
+  // ---- easyT-style home ----
+  heroBadge: { ar: "منصّة تعليمية عربية بجودة عالية", en: "A high-quality Arabic learning platform" },
+  heroBig1: { ar: "طريق الاحتراف", en: "Your path to mastery" },
+  heroBig2: { ar: "يبدأ هنا", en: "starts here" },
+  heroBigSub: {
+    ar: "كورسات مصوّرة باحترافية، متاحة على أي جهاز وفي أي وقت — وتقدّمك محفوظ لحسابك دايمًا.",
+    en: "Professionally produced courses, available on any device, anytime — with your progress always saved.",
+  },
+  startJourney: { ar: "ابدأ رحلتك الآن", en: "Start your journey" },
+  statCoursesLabel: { ar: "كورس متاح بجودة عالية", en: "high-quality courses available" },
+  statLessonsLabel: { ar: "درس مصوّر تقدر تتفرج عليه", en: "recorded lessons to watch" },
+  statCategoriesLabel: { ar: "تخصص مختلف يناسب أهدافك", en: "different tracks for your goals" },
+  coursesForYou: { ar: "كورسات مناسبة ليك", en: "Courses picked for you" },
+  allCoursesTitle: { ar: "جميع الكورسات", en: "All courses" },
+  testimonialsTitle: { ar: "آراء الطلبة", en: "What students say" },
+  testimonialsSub: { ar: "تجارب حقيقية من طلبة اتعلموا معانا", en: "Real experiences from our students" },
+  faqTitle: { ar: "الأسئلة الشائعة", en: "Frequently asked questions" },
+  readyTitle: { ar: "مستعد تبدأ رحلتك؟", en: "Ready to start your journey?" },
+  readySub: {
+    ar: "اعمل حسابك في دقيقة واحدة وابدأ أول درس النهارده.",
+    en: "Create your account in one minute and start your first lesson today.",
+  },
+  createAccount: { ar: "إنشاء حساب مجاني", en: "Create a free account" },
+  footerTagline: {
+    ar: "منصّة تعليمية عربية — بنساعدك توصل لأهدافك بمحتوى عملي ومركّز.",
+    en: "An Arabic-first learning platform — practical, focused content that gets you to your goals.",
+  },
+  footerRights: { ar: "جميع الحقوق محفوظة", en: "All rights reserved" },
 } as const;
 
 export type DictKey = keyof typeof dict;

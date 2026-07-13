@@ -1,9 +1,121 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useLang } from "@/context/AppProviders";
 import CourseCard from "@/components/CourseCard";
 import type { Category, Course } from "@/lib/types";
+
+/* ---- animated counter (easyT-style) ---- */
+function CountUp({ value }: { value: number }) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (value <= 0) {
+      setN(0);
+      return;
+    }
+    let raf = 0;
+    const start = performance.now();
+    const dur = 1400;
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / dur, 1);
+      setN(Math.round(value * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    // rAF is throttled in background tabs — make sure we always land on the final value
+    const settle = setTimeout(() => setN(value), dur + 200);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(settle);
+    };
+  }, [value]);
+  return <>{n.toLocaleString()}</>;
+}
+
+const testimonials = [
+  {
+    ar: "المحتوى منظم وواضح، وخلصت أول كورس ليا في أسبوع واحد. الشرح عملي ومن غير حشو خالص.",
+    en: "The content is organized and clear — I finished my first course in one week. Practical, zero filler.",
+    nameAr: "أحمد سامي",
+    nameEn: "Ahmed Samy",
+    roleAr: "طالب هندسة",
+    roleEn: "Engineering student",
+  },
+  {
+    ar: "أكتر حاجة عجبتني إن الكورس بيتفتح على أي جهاز والتقدّم بيفضل محفوظ. بكمل من الموبايل في المواصلات.",
+    en: "What I love most: courses open on any device and progress stays saved. I continue from my phone on the go.",
+    nameAr: "سارة محمود",
+    nameEn: "Sara Mahmoud",
+    roleAr: "خريجة تجارة",
+    roleEn: "Business graduate",
+  },
+  {
+    ar: "جربت منصات كتير قبل كده، لكن جودة التصوير والصوت هنا فرق كبير جدًا. حاسس إني قاعد في محاضرة حقيقية.",
+    en: "I tried many platforms before, but the video and audio quality here is a huge difference.",
+    nameAr: "محمد عبد الرحمن",
+    nameEn: "Mohamed Abdelrahman",
+    roleAr: "مصمم جرافيك",
+    roleEn: "Graphic designer",
+  },
+  {
+    ar: "نظام كود التفعيل سهّل عليا الاشتراك من غير فيزا. دفعت فودافون كاش والكورس اتفعّل في نفس اليوم.",
+    en: "The activation-code system made enrolling easy without a card. Paid via Vodafone Cash and got access the same day.",
+    nameAr: "منة الله حسن",
+    nameEn: "Mennatallah Hassan",
+    roleAr: "طالبة إعلام",
+    roleEn: "Media student",
+  },
+  {
+    ar: "الدروس قصيرة ومركزة، فبقدر أذاكر ساعة واحدة يوميًا وأحس بتقدم حقيقي كل أسبوع.",
+    en: "Lessons are short and focused, so one hour a day gives me real progress every week.",
+    nameAr: "كريم فتحي",
+    nameEn: "Karim Fathy",
+    roleAr: "محاسب",
+    roleEn: "Accountant",
+  },
+  {
+    ar: "الدعم بيرد بسرعة وأي مشكلة بتتحل في نفس اليوم. من أكتر المنصات اللي حسيت فيها باهتمام حقيقي بالطالب.",
+    en: "Support replies fast and issues get solved the same day. You can feel they truly care about students.",
+    nameAr: "ياسمين علي",
+    nameEn: "Yasmin Aly",
+    roleAr: "معلمة لغة إنجليزية",
+    roleEn: "English teacher",
+  },
+];
+
+const faqs = [
+  {
+    qAr: "هل أقدر أبدأ من الصفر من غير خبرة سابقة؟",
+    qEn: "Can I start from zero without prior experience?",
+    aAr: "أكيد! الكورسات مصممة تاخدك خطوة بخطوة من الأساسيات لحد الاحتراف، وكل درس مبني على اللي قبله.",
+    aEn: "Absolutely! Courses take you step by step from the basics to mastery — every lesson builds on the previous one.",
+  },
+  {
+    qAr: "إزاي أشترك في كورس؟",
+    qEn: "How do I enroll in a course?",
+    aAr: "بتدفع بفودافون كاش أو إنستاباي، أو بتستخدم كود تفعيل بيوصلك — بتدخله في صفحة الكورس والمحتوى بيتفتح فورًا.",
+    aEn: "Pay via Vodafone Cash or InstaPay, or use an activation code — enter it on the course page and the content unlocks instantly.",
+  },
+  {
+    qAr: "هل أقدر أتفرج من أي جهاز؟",
+    qEn: "Can I watch on any device?",
+    aAr: "أيوه، الموقع شغال على الموبايل والتابلت واللابتوب، وتقدمك محفوظ لحسابك — تكمل من المكان اللي وقفت عنده.",
+    aEn: "Yes — the site works on mobile, tablet, and laptop, and your progress is saved to your account so you continue where you left off.",
+  },
+  {
+    qAr: "الكورس بيفضل متاح ليا قد إيه؟",
+    qEn: "How long do I keep access to a course?",
+    aAr: "بمجرد تفعيل الكورس على حسابك بيفضل متاح ليك دايمًا، وتقدر ترجع لأي درس في أي وقت.",
+    aEn: "Once activated on your account, the course stays yours — rewatch any lesson anytime.",
+  },
+  {
+    qAr: "لو حصلت مشكلة في الدفع أو التفعيل؟",
+    qEn: "What if I have a payment or activation problem?",
+    aAr: "فريقنا بيراجع طلبات الدفع بسرعة، ولو الكود مشتغلش تواصل معانا وهنحل المشكلة في أقرب وقت.",
+    aEn: "Our team reviews payment requests quickly — if a code fails, contact us and we will fix it as soon as possible.",
+  },
+];
 
 export default function HomePage() {
   const { t, lang } = useLang();
@@ -11,7 +123,7 @@ export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCat, setActiveCat] = useState<string>("all");
   const [loading, setLoading] = useState(true);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   useEffect(() => {
     Promise.all([
@@ -25,6 +137,8 @@ export default function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const totalLessons = courses.reduce((s, c) => s + (c.lessonsCount || 0), 0);
+
   const featured = courses.filter((c) => c.featured);
   const visible = (
     activeCat === "all" ? courses : courses.filter((c) => c.categoryId === activeCat)
@@ -32,50 +146,42 @@ export default function HomePage() {
     .slice()
     .sort((a, b) => Number(b.featured) - Number(a.featured) || b.createdAt - a.createdAt);
 
-  // when showing "all" with a featured strip on top, don't repeat them below
   const mainList =
     activeCat === "all" && featured.length > 0
       ? visible.filter((c) => !c.featured)
       : visible;
 
-  const activeCatName =
-    activeCat === "all"
-      ? t("allCategories")
-      : (() => {
-          const c = categories.find((x) => x.id === activeCat);
-          return c ? (lang === "ar" ? c.nameAr : c.nameEn) : "";
-        })();
-
-  function pick(id: string) {
-    setActiveCat(id);
-    setDrawerOpen(false);
-  }
+  const marqueeItems = [...testimonials, ...testimonials];
 
   return (
     <div>
-      {/* Hero */}
+      {/* ============ Hero (easyT-style, centered) ============ */}
       <section className="relative overflow-hidden border-b border-ink/10">
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-24 end-[-6rem] h-72 w-72 rounded-full bg-moss-500/10 blur-3xl"
+          className="pointer-events-none absolute left-1/2 top-[-14rem] h-[28rem] w-[42rem] -translate-x-1/2 rounded-full bg-moss-500/15 blur-3xl"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-[-4rem] start-[-4rem] h-56 w-56 rounded-full bg-amber-500/15 blur-3xl"
+          className="pointer-events-none absolute bottom-[-8rem] start-[-8rem] h-72 w-72 rounded-full bg-amber-500/15 blur-3xl"
         />
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:py-28">
-          <div className="rise">
-            <p className="inline-block rounded-full border border-moss-500/30 bg-moss-500/10 px-4 py-1.5 text-xs font-bold tracking-wide text-moss-600">
-              {t("heroKicker")}
-            </p>
-          </div>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-[-6rem] end-[-6rem] h-64 w-64 rounded-full bg-moss-500/10 blur-3xl"
+        />
+
+        <div className="mx-auto max-w-6xl px-4 pb-16 pt-20 text-center sm:pt-28">
+          <p className="rise mx-auto inline-block rounded-full border border-moss-500/30 bg-moss-500/10 px-4 py-1.5 text-xs font-bold tracking-wide text-moss-600">
+            ✦ {t("heroBadge")}
+          </p>
+
           <h1
-            className="rise mt-7 max-w-3xl text-4xl font-extrabold leading-[1.35] sm:text-6xl sm:leading-[1.3]"
+            className="rise mx-auto mt-7 max-w-4xl text-4xl font-extrabold leading-[1.3] sm:text-6xl sm:leading-[1.25]"
             style={{ animationDelay: "80ms" }}
           >
-            {t("heroTitle1")}{" "}
+            {t("heroBig1")}{" "}
             <span className="relative inline-block text-moss-500">
-              {t("heroTitle2")}
+              {t("heroBig2")}
               <svg
                 className="absolute -bottom-1 start-0 w-full"
                 viewBox="0 0 200 12"
@@ -91,89 +197,83 @@ export default function HomePage() {
               </svg>
             </span>
           </h1>
+
           <p
-            className="rise mt-6 max-w-xl text-base leading-relaxed text-ink/65 sm:text-lg"
+            className="rise mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink/65 sm:text-lg"
             style={{ animationDelay: "160ms" }}
           >
-            {t("heroSub")}
+            {t("heroBigSub")}
           </p>
+
           <a
             href="#courses"
-            className="btn-primary rise mt-8 !px-8 !py-3.5 !text-base"
+            className="btn-primary rise mt-8 !rounded-full !px-10 !py-4 !text-base"
             style={{ animationDelay: "240ms" }}
           >
-            {t("browseCourses")}
+            {t("startJourney")} ←
           </a>
+
+          {/* stats counters */}
+          <div
+            className="rise mx-auto mt-16 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3"
+            style={{ animationDelay: "320ms" }}
+          >
+            {[
+              { value: courses.length, label: t("statCoursesLabel") },
+              { value: totalLessons, label: t("statLessonsLabel") },
+              { value: categories.length, label: t("statCategoriesLabel") },
+            ].map((s, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-ink/10 bg-white/70 px-6 py-5 backdrop-blur"
+              >
+                <div className="font-display text-3xl font-extrabold text-moss-600">
+                  <CountUp value={s.value} />
+                  <span className="text-amber-500">+</span>
+                </div>
+                <div className="mt-1 text-xs font-semibold leading-relaxed text-ink/55">
+                  {s.label}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Categories drawer */}
-      {drawerOpen && (
-        <div className="fixed inset-0 z-50">
-          <div
-            className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
-            onClick={() => setDrawerOpen(false)}
-          />
-          <aside className="absolute inset-y-0 start-0 w-72 max-w-[85vw] overflow-y-auto bg-paper p-5 shadow-2xl">
-            <div className="mb-5 flex items-center justify-between">
-              <h3 className="font-display text-lg font-bold">{t("browseByCategory")}</h3>
-              <button
-                onClick={() => setDrawerOpen(false)}
-                className="grid h-9 w-9 place-items-center rounded-xl border border-ink/15 text-lg hover:border-moss-500"
-                aria-label={t("close")}
-              >
-                ✕
-              </button>
-            </div>
-            <nav className="space-y-1.5">
-              <button
-                onClick={() => pick("all")}
-                className={`block w-full rounded-xl px-4 py-3 text-start text-sm font-semibold transition-colors ${
-                  activeCat === "all"
-                    ? "bg-moss-500 text-white"
-                    : "bg-white hover:bg-moss-500/10"
-                }`}
-              >
-                {t("allCategories")}
-              </button>
-              {categories.map((c) => {
-                const count = courses.filter((x) => x.categoryId === c.id).length;
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => pick(c.id)}
-                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-start text-sm font-semibold transition-colors ${
-                      activeCat === c.id
-                        ? "bg-moss-500 text-white"
-                        : "bg-white hover:bg-moss-500/10"
-                    }`}
-                  >
-                    <span>{lang === "ar" ? c.nameAr : c.nameEn}</span>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs ${
-                        activeCat === c.id ? "bg-white/20" : "bg-ink/5 text-ink/50"
-                      }`}
-                    >
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </nav>
-          </aside>
+      {/* ============ Courses (numbered easyT cards) ============ */}
+      <section id="courses" className="mx-auto max-w-6xl px-4 py-16">
+        <div className="mb-8 text-center">
+          <h2 className="font-display text-3xl font-extrabold sm:text-4xl">
+            {t("coursesForYou")}
+          </h2>
+          <div className="mx-auto mt-3 h-1 w-20 rounded-full bg-amber-500" />
         </div>
-      )}
 
-      {/* Catalog */}
-      <section id="courses" className="mx-auto max-w-6xl px-4 py-14">
-        <div className="mb-8 flex items-center gap-3">
+        {/* category filter chips */}
+        <div className="mb-10 flex flex-wrap items-center justify-center gap-2">
           <button
-            onClick={() => setDrawerOpen(true)}
-            className="btn-ghost !px-5 !py-2.5"
+            onClick={() => setActiveCat("all")}
+            className={`chip border ${
+              activeCat === "all"
+                ? "border-moss-500 bg-moss-500 text-white"
+                : "border-ink/15 bg-white text-ink/70 hover:border-moss-500 hover:text-moss-600"
+            }`}
           >
-            ☰ {t("browseByCategory")}
+            {t("allCategories")}
           </button>
-          <span className="chip bg-ink text-paper">{activeCatName}</span>
+          {categories.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => setActiveCat(c.id)}
+              className={`chip border ${
+                activeCat === c.id
+                  ? "border-moss-500 bg-moss-500 text-white"
+                  : "border-ink/15 bg-white text-ink/70 hover:border-moss-500 hover:text-moss-600"
+              }`}
+            >
+              {lang === "ar" ? c.nameAr : c.nameEn}
+            </button>
+          ))}
         </div>
 
         {loading ? (
@@ -182,9 +282,9 @@ export default function HomePage() {
           <>
             {activeCat === "all" && featured.length > 0 && (
               <div className="mb-12">
-                <h2 className="mb-5 flex items-center gap-2 font-display text-2xl font-extrabold">
+                <h3 className="mb-5 flex items-center gap-2 font-display text-2xl font-extrabold">
                   <span className="text-amber-500">★</span> {t("featuredCourses")}
-                </h2>
+                </h3>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {featured.map((course, i) => (
                     <CourseCard key={course.id} course={course} index={i} />
@@ -198,12 +298,129 @@ export default function HomePage() {
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {mainList.map((course, i) => (
-                  <CourseCard key={course.id} course={course} index={i} />
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    index={activeCat === "all" ? featured.length + i : i}
+                  />
                 ))}
               </div>
             )}
           </>
         )}
+      </section>
+
+      {/* ============ Testimonials marquee ============ */}
+      <section className="overflow-hidden border-y border-ink/10 bg-white/50 py-16">
+        <div className="mx-auto mb-10 max-w-6xl px-4 text-center">
+          <h2 className="font-display text-3xl font-extrabold sm:text-4xl">
+            {t("testimonialsTitle")}
+          </h2>
+          <p className="mt-3 text-sm text-ink/55">{t("testimonialsSub")}</p>
+          <div className="mx-auto mt-3 h-1 w-20 rounded-full bg-amber-500" />
+        </div>
+
+        <div dir="ltr" className="marquee-mask relative">
+          <div className="marquee-track flex w-max gap-5">
+            {marqueeItems.map((item, i) => (
+              <figure
+                key={i}
+                dir={lang === "ar" ? "rtl" : "ltr"}
+                className="card w-80 shrink-0 p-6 sm:w-96"
+              >
+                <blockquote className="text-sm leading-relaxed text-ink/75">
+                  “{lang === "ar" ? item.ar : item.en}”
+                </blockquote>
+                <figcaption className="mt-5 flex items-center gap-3 border-t border-ink/5 pt-4">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-moss-500/10 font-display font-bold text-moss-600">
+                    {(lang === "ar" ? item.nameAr : item.nameEn).charAt(0)}
+                  </span>
+                  <div>
+                    <div className="text-sm font-bold">
+                      {lang === "ar" ? item.nameAr : item.nameEn}
+                    </div>
+                    <div className="text-xs text-ink/50">
+                      {lang === "ar" ? item.roleAr : item.roleEn}
+                    </div>
+                  </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FAQ ============ */}
+      <section className="mx-auto max-w-3xl px-4 py-16">
+        <div className="mb-10 text-center">
+          <h2 className="font-display text-3xl font-extrabold sm:text-4xl">
+            {t("faqTitle")}
+          </h2>
+          <div className="mx-auto mt-3 h-1 w-20 rounded-full bg-amber-500" />
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((f, i) => {
+            const open = openFaq === i;
+            return (
+              <div
+                key={i}
+                className={`card overflow-hidden transition-shadow ${
+                  open ? "shadow-lift" : ""
+                }`}
+              >
+                <button
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start"
+                >
+                  <span className="font-display text-sm font-bold sm:text-base">
+                    {lang === "ar" ? f.qAr : f.qEn}
+                  </span>
+                  <span
+                    className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-lg transition-all ${
+                      open
+                        ? "rotate-45 bg-moss-500 text-white"
+                        : "bg-moss-500/10 text-moss-600"
+                    }`}
+                  >
+                    +
+                  </span>
+                </button>
+                {open && (
+                  <p className="border-t border-ink/5 px-5 py-4 text-sm leading-relaxed text-ink/65">
+                    {lang === "ar" ? f.aAr : f.aEn}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ============ Final CTA ============ */}
+      <section className="mx-auto max-w-6xl px-4 pb-20">
+        <div className="relative overflow-hidden rounded-3xl bg-moss-700 px-6 py-14 text-center text-white sm:py-16">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-20 start-[-4rem] h-56 w-56 rounded-full bg-moss-500/40 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute bottom-[-5rem] end-[-4rem] h-56 w-56 rounded-full bg-amber-500/25 blur-3xl"
+          />
+          <h2 className="relative font-display text-3xl font-extrabold sm:text-4xl">
+            {t("readyTitle")}
+          </h2>
+          <p className="relative mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/75 sm:text-base">
+            {t("readySub")}
+          </p>
+          <Link
+            href="/register"
+            className="btn-amber relative mt-8 !rounded-full !px-10 !py-4 !text-base"
+          >
+            {t("createAccount")}
+          </Link>
+        </div>
       </section>
     </div>
   );
