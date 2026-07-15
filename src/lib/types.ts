@@ -19,6 +19,8 @@ export interface Course {
   featured: boolean;
   lessonsCount: number;
   createdAt: number;
+  ratingAvg?: number;
+  ratingCount?: number;
 }
 
 export interface Lesson {
@@ -32,6 +34,8 @@ export interface Lesson {
   duration: number;
   status: "preparing" | "ready" | "errored";
   createdAt: number;
+  ratingAvg?: number;
+  ratingCount?: number;
 }
 
 export interface UserProfile {
@@ -101,4 +105,34 @@ export interface ActivationCode {
   usedByEmail: string | null;
   createdAt: number;
   usedAt: number | null;
+}
+
+export interface CourseReview {
+  uid: string;
+  name: string;
+  rating: number;
+  comment: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export type LessonReview = CourseReview;
+
+export interface Testimonial {
+  uid: string;
+  name: string;
+  rating: number;
+  comment: string;
+  lang: "ar" | "en";
+  courseId: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface CourseProgress {
+  courseId: string;
+  completedLessons: string[];
+  completed: boolean;
+  completedAt: number | null;
+  updatedAt: number;
 }

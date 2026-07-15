@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useLang } from "@/context/AppProviders";
+import { useAuth, useLang } from "@/context/AppProviders";
 import CourseCard from "@/components/CourseCard";
-import type { Category, Course } from "@/lib/types";
+import StarRating from "@/components/StarRating";
+import type { Category, Course, Testimonial } from "@/lib/types";
 
 /* ---- animated counter (easyT-style) ---- */
 function CountUp({ value }: { value: number }) {
@@ -117,10 +118,14 @@ const faqs = [
   },
 ];
 
+const MIN_TESTIMONIALS = 6;
+
 export default function HomePage() {
   const { t, lang } = useLang();
+  const { user, loading: authLoading } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [realTestimonials, setRealTestimonials] = useState<Testimonial[]>([]);
   const [activeCat, setActiveCat] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -129,10 +134,14 @@ export default function HomePage() {
     Promise.all([
       fetch("/api/courses").then((r) => r.json()),
       fetch("/api/categories").then((r) => r.json()),
+      fetch("/api/testimonials")
+        .then((r) => r.json())
+        .catch(() => ({ reviews: [] })),
     ])
-      .then(([c, cats]) => {
+      .then(([c, cats, testi]) => {
         if (Array.isArray(c)) setCourses(c);
         if (Array.isArray(cats)) setCategories(cats);
+        if (Array.isArray(testi?.reviews)) setRealTestimonials(testi.reviews);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -151,7 +160,25 @@ export default function HomePage() {
       ? visible.filter((c) => !c.featured)
       : visible;
 
-  const marqueeItems = [...testimonials, ...testimonials];
+  const realItems = realTestimonials.map((r) => ({
+    key: `real-${r.uid}`,
+    text: r.comment,
+    name: r.name || t("anonymousStudent"),
+    role: t("platformStudent"),
+    rating: r.rating,
+  }));
+  const staticItems = testimonials.map((item, i) => ({
+    key: `static-${i}`,
+    text: lang === "ar" ? item.ar : item.en,
+    name: lang === "ar" ? item.nameAr : item.nameEn,
+    role: lang === "ar" ? item.roleAr : item.roleEn,
+    rating: undefined as number | undefined,
+  }));
+  const blendedTestimonials = [
+    ...realItems,
+    ...staticItems.slice(0, Math.max(0, MIN_TESTIMONIALS - realItems.length)),
+  ];
+  const marqueeItems = [...blendedTestimonials, ...blendedTestimonials];
 
   return (
     <div>
@@ -324,25 +351,24 @@ export default function HomePage() {
           <div className="marquee-track flex w-max gap-5">
             {marqueeItems.map((item, i) => (
               <figure
-                key={i}
+                key={`${item.key}-${i}`}
                 dir={lang === "ar" ? "rtl" : "ltr"}
                 className="card w-80 shrink-0 p-6 sm:w-96"
               >
                 <blockquote className="text-sm leading-relaxed text-ink/75">
-                  “{lang === "ar" ? item.ar : item.en}”
+                  “{item.text}”
                 </blockquote>
-                <figcaption className="mt-5 flex items-center gap-3 border-t border-ink/5 pt-4">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-moss-500/10 font-display font-bold text-moss-600">
-                    {(lang === "ar" ? item.nameAr : item.nameEn).charAt(0)}
-                  </span>
-                  <div>
-                    <div className="text-sm font-bold">
-                      {lang === "ar" ? item.nameAr : item.nameEn}
-                    </div>
-                    <div className="text-xs text-ink/50">
-                      {lang === "ar" ? item.roleAr : item.roleEn}
+                <figcaption className="mt-5 flex items-center justify-between gap-3 border-t border-ink/5 pt-4">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-moss-500/10 font-display font-bold text-moss-600">
+                      {item.name.charAt(0)}
+                    </span>
+                    <div>
+                      <div className="text-sm font-bold">{item.name}</div>
+                      <div className="text-xs text-ink/50">{item.role}</div>
                     </div>
                   </div>
+                  {item.rating && <StarRating value={item.rating} size="sm" />}
                 </figcaption>
               </figure>
             ))}
@@ -397,31 +423,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ============ Final CTA ============ */}
-      <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="relative overflow-hidden rounded-3xl bg-moss-700 px-6 py-14 text-center text-white sm:py-16">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-20 start-[-4rem] h-56 w-56 rounded-full bg-moss-500/40 blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute bottom-[-5rem] end-[-4rem] h-56 w-56 rounded-full bg-amber-500/25 blur-3xl"
-          />
-          <h2 className="relative font-display text-3xl font-extrabold sm:text-4xl">
-            {t("readyTitle")}
-          </h2>
-          <p className="relative mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/75 sm:text-base">
-            {t("readySub")}
-          </p>
-          <Link
-            href="/register"
-            className="btn-amber relative mt-8 !rounded-full !px-10 !py-4 !text-base"
-          >
-            {t("createAccount")}
-          </Link>
-        </div>
-      </section>
+      {/* ============ Final CTA (logged-out visitors only) ============ */}
+      {!authLoading && !user && (
+        <section className="mx-auto max-w-6xl px-4 pb-20">
+          <div className="relative overflow-hidden rounded-3xl bg-moss-700 px-6 py-14 text-center text-white sm:py-16">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-20 start-[-4rem] h-56 w-56 rounded-full bg-moss-500/40 blur-3xl"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute bottom-[-5rem] end-[-4rem] h-56 w-56 rounded-full bg-amber-500/25 blur-3xl"
+            />
+            <h2 className="relative font-display text-3xl font-extrabold sm:text-4xl">
+              {t("readyTitle")}
+            </h2>
+            <p className="relative mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/75 sm:text-base">
+              {t("readySub")}
+            </p>
+            <Link
+              href="/register"
+              className="btn-amber relative mt-8 !rounded-full !px-10 !py-4 !text-base"
+            >
+              {t("createAccount")}
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

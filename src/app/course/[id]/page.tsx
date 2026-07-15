@@ -7,6 +7,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth, useLang } from "@/context/AppProviders";
 import { api } from "@/lib/apiClient";
 import CheckoutButton from "@/components/CheckoutButton";
+import RatingBadge from "@/components/RatingBadge";
+import ReviewList from "@/components/ReviewList";
 import type { Course, Lesson } from "@/lib/types";
 
 interface CourseResponse {
@@ -101,7 +103,10 @@ export default function CoursePage() {
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         {/* Main */}
         <div className="rise">
-          <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl">{title}</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl">{title}</h1>
+            <RatingBadge avg={course.ratingAvg} count={course.ratingCount} />
+          </div>
           <p className="mt-4 whitespace-pre-line leading-relaxed text-ink/70">{desc}</p>
 
           <h2 className="mt-10 text-xl font-bold">{t("courseContent")}</h2>
@@ -154,6 +159,17 @@ export default function CoursePage() {
               <p className="text-sm text-ink/50">{t("noItems")}</p>
             )}
           </ol>
+
+          <h2 className="mt-12 text-xl font-bold">{t("courseReviews")}</h2>
+          <div className="mt-4">
+            <ReviewList
+              fetchUrl={`/api/courses/${course.id}/reviews`}
+              postUrl={`/api/courses/${course.id}/reviews`}
+              eligible={enrolled}
+              ineligibleMessage={!user ? t("loginToReview") : t("enrollToReview")}
+              onSubmitted={load}
+            />
+          </div>
         </div>
 
         {/* Sidebar */}

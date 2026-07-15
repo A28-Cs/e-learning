@@ -236,6 +236,28 @@ const dict = {
     en: "An Arabic-first learning platform — practical, focused content that gets you to your goals.",
   },
   footerRights: { ar: "جميع الحقوق محفوظة", en: "All rights reserved" },
+
+  // ---- reviews & ratings ----
+  courseReviews: { ar: "تقييمات الطلبة", en: "Student reviews" },
+  reviewPlaceholder: { ar: "اكتب رأيك هنا...", en: "Write your review here..." },
+  submitReview: { ar: "إرسال التقييم", en: "Submit review" },
+  updateReview: { ar: "تحديث تقييمك", en: "Update your review" },
+  noReviewsYet: { ar: "لسه مفيش تقييمات.", en: "No reviews yet." },
+  reviewSubmitted: { ar: "تم إرسال تقييمك! 🎉", en: "Your review was submitted! 🎉" },
+  loginToReview: { ar: "سجّل دخولك عشان تضيف تقييم", en: "Log in to add a review" },
+  enrollToReview: {
+    ar: "لازم تكون مشترك في الكورس عشان تقيّمه",
+    en: "You must be enrolled to review this course",
+  },
+  rateLesson: { ar: "قيّم الدرس ده", en: "Rate this lesson" },
+  courseCompleted: { ar: "خلصت الكورس", en: "Completed" },
+  shareExperienceTitle: { ar: "شاركنا رأيك في المنصة", en: "Share your experience with us" },
+  shareExperienceSub: {
+    ar: "خلصت كورس كامل! رأيك هيساعد طلبة تانيين وهيظهر في الصفحة الرئيسية.",
+    en: "You finished a full course! Your feedback helps other students and will appear on the homepage.",
+  },
+  platformStudent: { ar: "طالب في تقاطُع", en: "Taqato student" },
+  anonymousStudent: { ar: "طالب", en: "Student" },
 } as const;
 
 export type DictKey = keyof typeof dict;

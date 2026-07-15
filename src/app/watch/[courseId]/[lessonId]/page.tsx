@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import dynamicImport from "next/dynamic";
 import { useAuth, useLang } from "@/context/AppProviders";
 import { api } from "@/lib/apiClient";
+import RatingBadge from "@/components/RatingBadge";
+import ReviewList from "@/components/ReviewList";
 
 const MuxPlayer = dynamicImport(() => import("@mux/mux-player-react"), { ssr: false });
 
@@ -14,6 +16,8 @@ interface PlaybackResponse {
   titleAr: string;
   titleEn: string;
   status: string;
+  ratingAvg?: number;
+  ratingCount?: number;
 }
 
 // watermark drifts between these spots so it can't be cropped out
@@ -33,10 +37,14 @@ export default function WatchPage() {
   const [state, setState] = useState<"loading" | "ok" | "denied" | "error">("loading");
   const [wmIndex, setWmIndex] = useState(0);
   const [flash, setFlash] = useState(false);
+  const [lessonDone, setLessonDone] = useState(false);
   const lastReport = useRef(0);
+  const progressReported = useRef(false);
 
   useEffect(() => {
     if (authLoading) return;
+    setLessonDone(false);
+    progressReported.current = false;
     api<PlaybackResponse>(`/api/playback/${courseId}/${lessonId}`)
       .then((d) => {
         setData(d);
@@ -46,6 +54,17 @@ export default function WatchPage() {
         setState(e.message === "not_entitled" ? "denied" : "error");
       });
   }, [authLoading, user, courseId, lessonId]);
+
+  async function handleEnded() {
+    if (progressReported.current || !user) return;
+    progressReported.current = true;
+    try {
+      await api("/api/progress", { method: "POST", body: { courseId, lessonId } });
+      setLessonDone(true);
+    } catch {
+      progressReported.current = false;
+    }
+  }
 
   // drifting watermark
   useEffect(() => {
@@ -142,7 +161,10 @@ export default function WatchPage() {
 
       {state === "ok" && data && (
         <div className="rise mt-6">
-          <h1 className="mb-5 text-2xl font-bold">{title}</h1>
+          <div className="mb-5 flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-bold">{title}</h1>
+            <RatingBadge avg={data.ratingAvg} count={data.ratingCount} />
+          </div>
           {data.playbackId ? (
             <div className="relative overflow-hidden rounded-2xl">
               <MuxPlayer
@@ -150,6 +172,7 @@ export default function WatchPage() {
                 streamType="on-demand"
                 accentColor="#0B7A55"
                 envKey={process.env.NEXT_PUBLIC_MUX_ENV_KEY}
+                onEnded={handleEnded}
                 metadata={{
                   video_title: title,
                   viewer_user_id: user?.uid ?? "anonymous",
@@ -168,6 +191,18 @@ export default function WatchPage() {
             </div>
           ) : (
             <p className="card p-10 text-center text-amber-600">{t("preparing")}</p>
+          )}
+
+          {lessonDone && (
+            <div className="pop-in mt-8">
+              <h2 className="mb-3 text-lg font-bold">{t("rateLesson")}</h2>
+              <ReviewList
+                fetchUrl={`/api/courses/${courseId}/lessons/${lessonId}/reviews`}
+                postUrl={`/api/courses/${courseId}/lessons/${lessonId}/reviews`}
+                eligible
+                showList={false}
+              />
+            </div>
           )}
         </div>
       )}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLang } from "@/context/AppProviders";
+import RatingBadge from "@/components/RatingBadge";
 import type { Course } from "@/lib/types";
 
 export default function CourseCard({ course, index = 0 }: { course: Course; index?: number }) {
@@ -47,10 +48,11 @@ export default function CourseCard({ course, index = 0 }: { course: Course; inde
           {num}
         </span>
 
-        <div className="flex items-center gap-2 text-xs font-semibold text-ink/50">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-ink/50">
           <span className="inline-flex items-center gap-1 rounded-full bg-moss-500/10 px-2.5 py-1 text-moss-600">
             ▶ {course.lessonsCount} {t("lessonsCount")}
           </span>
+          <RatingBadge avg={course.ratingAvg} count={course.ratingCount} />
         </div>
 
         <h3 className="mt-3 font-display text-lg font-bold leading-snug group-hover:text-moss-600">

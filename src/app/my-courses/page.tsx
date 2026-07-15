@@ -3,13 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth, useLang } from "@/context/AppProviders";
+import { api } from "@/lib/apiClient";
 import CourseCard from "@/components/CourseCard";
-import type { Course } from "@/lib/types";
+import ReviewList from "@/components/ReviewList";
+import type { Course, CourseProgress } from "@/lib/types";
 
 export default function MyCoursesPage() {
   const { t } = useLang();
   const { user, profile, loading } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [completedMap, setCompletedMap] = useState<Record<string, boolean>>({});
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
@@ -20,13 +23,26 @@ export default function MyCoursesPage() {
     }
     fetch("/api/courses")
       .then((r) => r.json())
-      .then((all: Course[]) => {
-        if (Array.isArray(all)) {
-          setCourses(all.filter((c) => profile.enrolledCourses?.includes(c.id)));
-        }
+      .then(async (all: Course[]) => {
+        if (!Array.isArray(all)) return;
+        const mine = all.filter((c) => profile.enrolledCourses?.includes(c.id));
+        setCourses(mine);
+        const entries = await Promise.all(
+          mine.map(async (c) => {
+            try {
+              const p = await api<CourseProgress>(`/api/progress/${c.id}`);
+              return [c.id, p.completed] as const;
+            } catch {
+              return [c.id, false] as const;
+            }
+          })
+        );
+        setCompletedMap(Object.fromEntries(entries));
       })
       .finally(() => setFetching(false));
   }, [loading, profile]);
+
+  const anyCompleted = Object.values(completedMap).some(Boolean);
 
   if (loading || fetching) {
     return <p className="py-24 text-center text-ink/50">{t("loading")}</p>;
@@ -55,8 +71,28 @@ export default function MyCoursesPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((c, i) => (
-            <CourseCard key={c.id} course={c} index={i} />
+            <div key={c.id} className="relative">
+              {completedMap[c.id] && (
+                <span className="absolute -top-2 end-4 z-10 rounded-full bg-moss-500 px-2.5 py-1 text-[11px] font-bold text-white shadow-card">
+                  ✓ {t("courseCompleted")}
+                </span>
+              )}
+              <CourseCard course={c} index={i} />
+            </div>
           ))}
+        </div>
+      )}
+
+      {anyCompleted && (
+        <div className="rise mt-12">
+          <h2 className="mb-2 text-xl font-bold">{t("shareExperienceTitle")}</h2>
+          <p className="mb-4 text-sm text-ink/60">{t("shareExperienceSub")}</p>
+          <ReviewList
+            fetchUrl="/api/testimonials"
+            postUrl="/api/testimonials"
+            eligible
+            showList={false}
+          />
         </div>
       )}
     </div>

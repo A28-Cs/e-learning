@@ -45,6 +45,8 @@ export async function GET(
       titleAr: lesson.titleAr,
       titleEn: lesson.titleEn,
       status: lesson.status,
+      ratingAvg: lesson.ratingAvg ?? 0,
+      ratingCount: lesson.ratingCount ?? 0,
     });
   } catch (err) {
     return errorResponse(err);
