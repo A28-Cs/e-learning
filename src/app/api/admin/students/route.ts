@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
           name: u.name ?? "",
           email: u.email ?? "",
           role: (u.role as Role | undefined) ?? "student",
+          teacherRequest: (u.teacherRequest as string | undefined) ?? null,
           enrolledCount: Array.isArray(u.enrolledCourses) ? u.enrolledCourses.length : 0,
           createdAt: Number(u.createdAt ?? 0),
         };

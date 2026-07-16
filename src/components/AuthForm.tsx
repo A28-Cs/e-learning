@@ -9,6 +9,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
+import { api } from "@/lib/apiClient";
 import { useLang } from "@/context/AppProviders";
 
 export default function AuthForm({ mode }: { mode: "login" | "register" }) {
@@ -17,8 +18,22 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [intent, setIntent] = useState<"student" | "teacher">("student");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  async function register() {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    if (name.trim()) await updateProfile(cred.user, { displayName: name.trim() });
+    // Teacher accounts stay pending until an admin approves them.
+    if (intent === "teacher") {
+      try {
+        await api("/api/apply-teacher", { method: "POST" });
+      } catch {
+        /* non-fatal: they can re-apply later; account is created as a student */
+      }
+    }
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -26,8 +41,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
     setBusy(true);
     try {
       if (mode === "register") {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        if (name.trim()) await updateProfile(cred.user, { displayName: name.trim() });
+        await register();
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -55,6 +69,30 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
                 onChange={(e) => setName(e.target.value)}
                 required
               />
+            </div>
+          )}
+          {mode === "register" && (
+            <div>
+              <label className="label">{t("registerAs")}</label>
+              <div className="grid grid-cols-2 gap-2">
+                {(["student", "teacher"] as const).map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setIntent(r)}
+                    className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                      intent === r
+                        ? "border-moss-500 bg-moss-500/10 text-moss-600"
+                        : "border-ink/15 text-ink/60 hover:border-ink/30"
+                    }`}
+                  >
+                    {r === "student" ? t("roleStudent") : t("roleTeacher")}
+                  </button>
+                ))}
+              </div>
+              {intent === "teacher" && (
+                <p className="mt-1.5 text-xs text-ink/50">{t("teacherApprovalNote")}</p>
+              )}
             </div>
           )}
           <div>

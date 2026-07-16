@@ -49,6 +49,8 @@ export interface UserProfile {
   name: string;
   email: string;
   role: Role;
+  /** Set when a user registers as a teacher; role stays "student" until admin approves. */
+  teacherRequest?: "pending" | "approved" | "rejected" | null;
   enrolledCourses: string[];
   isAdmin: boolean;
   createdAt: number;

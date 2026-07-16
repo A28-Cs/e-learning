@@ -14,13 +14,16 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
   }
 
   if (!(profile?.role === "teacher" || profile?.isAdmin)) {
+    const pending = profile?.teacherRequest === "pending";
     return (
       <div className="py-24 text-center">
-        <p className="text-lg font-bold">🚫</p>
-        <p className="mt-2 text-ink/60">{t("teacherOnly")}</p>
-        <Link href="/login" className="btn-primary mt-6">
-          {t("login")}
-        </Link>
+        <p className="text-lg font-bold">{pending ? "⏳" : "🚫"}</p>
+        <p className="mt-2 text-ink/60">{pending ? t("teacherPending") : t("teacherOnly")}</p>
+        {!profile && (
+          <Link href="/login" className="btn-primary mt-6">
+            {t("login")}
+          </Link>
+        )}
       </div>
     );
   }

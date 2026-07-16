@@ -13,11 +13,13 @@ interface StudentRow {
   name: string;
   email: string;
   role: Role;
+  teacherRequest: string | null;
   enrolledCount: number;
   createdAt: number;
 }
 
-const ROLE_FILTERS: (Role | "all")[] = ["all", "admin", "teacher", "student"];
+type Filter = Role | "all" | "pending";
+const ROLE_FILTERS: Filter[] = ["all", "pending", "admin", "teacher", "student"];
 const roleLabelKey: Record<Role, DictKey> = {
   admin: "roleAdmin",
   teacher: "roleTeacher",
@@ -28,22 +30,41 @@ export default function AdminStudentsPage() {
   const { t, lang } = useLang();
   const [students, setStudents] = useState<StudentRow[]>([]);
   const [query, setQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState<Role | "all">("all");
+  const [roleFilter, setRoleFilter] = useState<Filter>("all");
   const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState("");
 
-  useEffect(() => {
+  const load = () => {
     api<StudentRow[]>("/api/admin/students")
       .then(setStudents)
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(load, []);
+
+  async function decide(uid: string, action: "approveTeacher" | "rejectTeacher") {
+    setBusy(uid);
+    try {
+      await api(`/api/admin/students/${uid}`, { method: "PUT", body: { action } });
+      load();
+    } finally {
+      setBusy("");
+    }
+  }
 
   const q = query.trim().toLowerCase();
   const visible = students.filter((s) => {
-    if (roleFilter !== "all" && s.role !== roleFilter) return false;
+    if (roleFilter === "pending") {
+      if (s.teacherRequest !== "pending") return false;
+    } else if (roleFilter !== "all" && s.role !== roleFilter) {
+      return false;
+    }
     if (!q) return true;
     return s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
   });
+
+  const pendingCount = students.filter((s) => s.teacherRequest === "pending").length;
 
   return (
     <div className="rise">
@@ -67,7 +88,11 @@ export default function AdminStudentsPage() {
                   : "border border-ink/15 text-ink/70"
               }`}
             >
-              {r === "all" ? t("roleAll") : t(roleLabelKey[r])}
+              {r === "all"
+                ? t("roleAll")
+                : r === "pending"
+                  ? `${t("rolePending")}${pendingCount ? ` (${pendingCount})` : ""}`
+                  : t(roleLabelKey[r])}
             </button>
           ))}
         </div>
@@ -101,6 +126,11 @@ export default function AdminStudentsPage() {
                     <span className="chip border border-ink/15 text-xs">
                       {t(roleLabelKey[s.role])}
                     </span>
+                    {s.teacherRequest === "pending" && (
+                      <span className="chip ms-1.5 bg-amber-500/15 text-xs text-amber-600">
+                        {t("pendingTeacher")}
+                      </span>
+                    )}
                   </td>
                   <td className="px-5 py-3 tabular-nums">{s.enrolledCount}</td>
                   <td className="px-5 py-3 text-xs text-ink/50" dir="ltr">
@@ -110,13 +140,33 @@ export default function AdminStudentsPage() {
                         )
                       : "—"}
                   </td>
-                  <td className="px-5 py-3 text-end">
-                    <Link
-                      href={`/admin/students/${s.uid}`}
-                      className="btn-ghost !px-4 !py-1.5 text-xs"
-                    >
-                      {t("studentProfile")}
-                    </Link>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      {s.teacherRequest === "pending" && (
+                        <>
+                          <button
+                            onClick={() => decide(s.uid, "approveTeacher")}
+                            disabled={busy === s.uid}
+                            className="btn-primary !px-3 !py-1.5 text-xs"
+                          >
+                            {t("approveTeacher")}
+                          </button>
+                          <button
+                            onClick={() => decide(s.uid, "rejectTeacher")}
+                            disabled={busy === s.uid}
+                            className="btn-danger !px-3 !py-1.5 text-xs"
+                          >
+                            {t("rejectTeacher")}
+                          </button>
+                        </>
+                      )}
+                      <Link
+                        href={`/admin/students/${s.uid}`}
+                        className="btn-ghost !px-4 !py-1.5 text-xs"
+                      >
+                        {t("studentProfile")}
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

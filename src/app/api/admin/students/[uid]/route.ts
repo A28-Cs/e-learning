@@ -6,6 +6,12 @@ import type { Role } from "@/lib/types";
 
 const ROLES: Role[] = ["admin", "teacher", "student"];
 
+// When an admin sets a role, keep the teacherRequest flag consistent:
+// promoting to teacher marks it approved; anything else clears any pending flag.
+function teacherRequestFor(role: Role) {
+  return role === "teacher" ? "approved" : FieldValue.delete();
+}
+
 export const dynamic = "force-dynamic";
 
 // GET /api/admin/students/[uid] — full student profile:
@@ -43,6 +49,7 @@ export async function GET(req: NextRequest, { params }: { params: { uid: string 
         name: user.name ?? "",
         email: user.email ?? "",
         role: (user.role as Role | undefined) ?? "student",
+        teacherRequest: (user.teacherRequest as string | undefined) ?? null,
         createdAt: Number(user.createdAt ?? 0),
       },
       enrollments: enrolledIds.map((id) => ({
@@ -82,7 +89,20 @@ export async function PUT(req: NextRequest, { params }: { params: { uid: string 
       if (!ROLES.includes(role)) {
         return Response.json({ error: "bad_request" }, { status: 400 });
       }
-      await adminDb.collection("users").doc(params.uid).set({ role }, { merge: true });
+      await adminDb
+        .collection("users")
+        .doc(params.uid)
+        .set({ role, teacherRequest: teacherRequestFor(role) }, { merge: true });
+      return Response.json({ ok: true });
+    }
+
+    // Approve/reject a pending teacher request without a full role dropdown.
+    if (action === "approveTeacher" || action === "rejectTeacher") {
+      const patch =
+        action === "approveTeacher"
+          ? { role: "teacher", teacherRequest: "approved" }
+          : { teacherRequest: "rejected" };
+      await adminDb.collection("users").doc(params.uid).set(patch, { merge: true });
       return Response.json({ ok: true });
     }
 
