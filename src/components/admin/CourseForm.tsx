@@ -3,12 +3,19 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/apiClient";
-import { useLang } from "@/context/AppProviders";
+import { useAuth, useLang } from "@/context/AppProviders";
 import ImageUpload from "./ImageUpload";
 import type { Category, Course } from "@/lib/types";
 
-export default function CourseForm({ course }: { course?: Course }) {
+export default function CourseForm({
+  course,
+  basePath = "/admin/courses",
+}: {
+  course?: Course;
+  basePath?: string;
+}) {
   const { t, lang } = useLang();
+  const { profile } = useAuth();
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [busy, setBusy] = useState(false);
@@ -20,7 +27,6 @@ export default function CourseForm({ course }: { course?: Course }) {
     descAr: course?.descAr ?? "",
     descEn: course?.descEn ?? "",
     categoryId: course?.categoryId ?? "",
-    price: course?.price ?? 0,
     thumbnail: course?.thumbnail ?? "",
     published: course?.published ?? false,
     featured: course?.featured ?? false,
@@ -49,7 +55,7 @@ export default function CourseForm({ course }: { course?: Course }) {
           method: "POST",
           body: form,
         });
-        router.push(`/admin/courses/${created.id}`);
+        router.push(`${basePath}/${created.id}`);
       }
     } catch (err) {
       setError((err as Error).message);
@@ -124,14 +130,10 @@ export default function CourseForm({ course }: { course?: Course }) {
           <label className="label">
             {t("price")} ({t("egp")})
           </label>
-          <input
-            className="input"
-            type="number"
-            min={0}
-            dir="ltr"
-            value={form.price}
-            onChange={(e) => set("price", Number(e.target.value))}
-          />
+          <p className="input flex items-center bg-ink/5 text-ink/60" dir="ltr">
+            {(course?.price ?? 0).toLocaleString()} {t("egp")}
+          </p>
+          <p className="mt-1 text-xs text-ink/45">{t("priceComputedHint")}</p>
         </div>
         <div className="flex flex-col justify-end gap-2 pb-1">
           <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold">
@@ -143,15 +145,17 @@ export default function CourseForm({ course }: { course?: Course }) {
             />
             {t("published")}
           </label>
-          <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold">
-            <input
-              type="checkbox"
-              checked={form.featured}
-              onChange={(e) => set("featured", e.target.checked)}
-              className="h-4.5 w-4.5 accent-amber-500"
-            />
-            ★ {t("featuredToggle")}
-          </label>
+          {profile?.isAdmin && (
+            <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold">
+              <input
+                type="checkbox"
+                checked={form.featured}
+                onChange={(e) => set("featured", e.target.checked)}
+                className="h-4.5 w-4.5 accent-amber-500"
+              />
+              ★ {t("featuredToggle")}
+            </label>
+          )}
         </div>
       </div>
 

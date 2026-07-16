@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 import { errorResponse, requireAdmin } from "@/lib/serverAuth";
+import type { Role } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export async function GET(req: NextRequest) {
           uid: d.id,
           name: u.name ?? "",
           email: u.email ?? "",
+          role: (u.role as Role | undefined) ?? "student",
           enrolledCount: Array.isArray(u.enrolledCourses) ? u.enrolledCourses.length : 0,
           createdAt: Number(u.createdAt ?? 0),
         };

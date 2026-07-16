@@ -7,13 +7,13 @@ import { api } from "@/lib/apiClient";
 import { useLang } from "@/context/AppProviders";
 import type { Course } from "@/lib/types";
 
-export default function AdminCoursesPage() {
+export default function TeacherCoursesPage() {
   const { t, lang } = useLang();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(() => {
-    api<Course[]>("/api/courses?all=1")
+    api<Course[]>("/api/courses?mine=1")
       .then(setCourses)
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -27,23 +27,13 @@ export default function AdminCoursesPage() {
     load();
   }
 
-  async function recomputePrices() {
-    await api("/api/admin/recompute-prices", { method: "POST" });
-    load();
-  }
-
   return (
     <div className="rise">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold">{t("adminCourses")}</h1>
-        <div className="flex gap-2">
-          <button onClick={recomputePrices} className="btn-ghost">
-            {t("recomputePrices")}
-          </button>
-          <Link href="/admin/courses/new" className="btn-primary">
-            + {t("newCourse")}
-          </Link>
-        </div>
+        <h1 className="text-2xl font-extrabold">{t("teacherCourses")}</h1>
+        <Link href="/teacher/courses/new" className="btn-primary">
+          + {t("newCourse")}
+        </Link>
       </div>
 
       {loading ? (
@@ -60,9 +50,7 @@ export default function AdminCoursesPage() {
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-bold">
-                  {lang === "ar" ? c.titleAr : c.titleEn}
-                </p>
+                <p className="truncate font-bold">{lang === "ar" ? c.titleAr : c.titleEn}</p>
                 <p className="mt-0.5 text-xs text-ink/50">
                   {c.lessonsCount} {t("lessonsCount")} ·{" "}
                   {c.price > 0 ? `${c.price.toLocaleString()} ${t("egp")}` : t("free")}
@@ -70,14 +58,12 @@ export default function AdminCoursesPage() {
               </div>
               <span
                 className={`chip !py-1 text-xs ${
-                  c.published
-                    ? "bg-moss-500/10 text-moss-600"
-                    : "bg-ink/5 text-ink/50"
+                  c.published ? "bg-moss-500/10 text-moss-600" : "bg-ink/5 text-ink/50"
                 }`}
               >
                 {c.published ? t("published") : t("draft")}
               </span>
-              <Link href={`/admin/courses/${c.id}`} className="btn-ghost !px-4 !py-2 text-xs">
+              <Link href={`/teacher/courses/${c.id}`} className="btn-ghost !px-4 !py-2 text-xs">
                 {t("edit")}
               </Link>
               <button onClick={() => remove(c.id)} className="btn-danger !px-4 !py-2 text-xs">

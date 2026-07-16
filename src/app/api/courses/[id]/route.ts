@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
-import { errorResponse, getAuthedUser, requireAdmin } from "@/lib/serverAuth";
+import { errorResponse, getAuthedUser, requireCourseOwner } from "@/lib/serverAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +36,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         titleEn: l.titleEn,
         order: l.order,
         isFree: l.isFree,
+        price: l.price ?? 0,
         duration: l.duration,
         status: l.status,
       };
@@ -54,16 +55,17 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
+// Note: `price` is intentionally never accepted here — it's always server-computed
+// from lesson prices (see recomputeCoursePrice in courseHelpers.ts).
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await requireAdmin(req);
+    await requireCourseOwner(req, params.id);
     const body = await req.json();
     const patch: Record<string, unknown> = {};
     const strFields = ["titleAr", "titleEn", "descAr", "descEn", "categoryId", "thumbnail", "currency"];
     for (const f of strFields) {
       if (body[f] !== undefined) patch[f] = String(body[f]);
     }
-    if (body.price !== undefined) patch.price = Number(body.price);
     if (body.published !== undefined) patch.published = Boolean(body.published);
     if (body.featured !== undefined) patch.featured = Boolean(body.featured);
     await adminDb.collection("courses").doc(params.id).update(patch);
@@ -75,7 +77,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await requireAdmin(req);
+    await requireCourseOwner(req, params.id);
     const ref = adminDb.collection("courses").doc(params.id);
     const lessons = await ref.collection("lessons").get();
     const batch = adminDb.batch();

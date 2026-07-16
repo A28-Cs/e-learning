@@ -5,9 +5,17 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { api } from "@/lib/apiClient";
 import { useLang } from "@/context/AppProviders";
+import type { DictKey } from "@/lib/i18n";
+
+type Role = "admin" | "teacher" | "student";
+const roleLabelKey: Record<Role, DictKey> = {
+  admin: "roleAdmin",
+  teacher: "roleTeacher",
+  student: "roleStudent",
+};
 
 interface Profile {
-  student: { uid: string; name: string; email: string; createdAt: number };
+  student: { uid: string; name: string; email: string; role: Role; createdAt: number };
   enrollments: { courseId: string; titleAr: string; titleEn: string }[];
   allCourses: { id: string; titleAr: string; titleEn: string }[];
   paymentRequests: {
@@ -57,6 +65,16 @@ export default function StudentProfilePage() {
     }
   }
 
+  async function setRole(role: Role) {
+    setBusy(true);
+    try {
+      await api(`/api/admin/students/${uid}`, { method: "PUT", body: { action: "setRole", role } });
+      load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!data) return <p className="py-16 text-center text-ink/50">{t("loading")}</p>;
 
   const { student, enrollments, allCourses, paymentRequests, codes, orders } = data;
@@ -87,6 +105,21 @@ export default function StudentProfilePage() {
           <p className="text-sm text-ink/60" dir="ltr">
             {student.email}
           </p>
+        </div>
+        <div className="min-w-40">
+          <label className="label">{t("changeRole")}</label>
+          <select
+            className="input"
+            value={student.role}
+            disabled={busy}
+            onChange={(e) => setRole(e.target.value as Role)}
+          >
+            {(["admin", "teacher", "student"] as Role[]).map((r) => (
+              <option key={r} value={r}>
+                {t(roleLabelKey[r])}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="ms-auto text-end text-xs text-ink/50">
           <p>{t("joinedAt")}</p>

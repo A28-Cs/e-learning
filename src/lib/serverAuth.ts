@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { adminAuth } from "./firebaseAdmin";
+import { adminAuth, adminDb } from "./firebaseAdmin";
+import type { Course, Role } from "./types";
 
 export interface AuthedUser {
   uid: string;
@@ -44,6 +45,51 @@ export async function requireAdmin(req: NextRequest): Promise<AuthedUser> {
   const user = await requireUser(req);
   if (!user.isAdmin) throw new HttpError(403, "Forbidden");
   return user;
+}
+
+export async function getStoredRole(uid: string): Promise<Role> {
+  const snap = await adminDb.collection("users").doc(uid).get();
+  const role = snap.data()?.role as Role | undefined;
+  return role ?? "student";
+}
+
+/** Admin always passes, regardless of the `allowed` list. */
+export async function requireRole(
+  req: NextRequest,
+  allowed: Role[]
+): Promise<AuthedUser & { role: Role }> {
+  const user = await requireUser(req);
+  if (user.isAdmin) return { ...user, role: "admin" };
+  const role = await getStoredRole(user.uid);
+  if (!allowed.includes(role)) throw new HttpError(403, "Forbidden");
+  return { ...user, role };
+}
+
+export async function requireTeacher(req: NextRequest): Promise<AuthedUser & { role: Role }> {
+  return requireRole(req, ["teacher"]);
+}
+
+/**
+ * Requires the caller to be an admin, or a teacher who owns the given course.
+ * Returns the loaded course doc so callers don't need to re-fetch it.
+ */
+export async function requireCourseOwner(
+  req: NextRequest,
+  courseId: string
+): Promise<{ user: AuthedUser & { role: Role }; course: Course & { id: string } }> {
+  const user = await requireUser(req);
+  const ref = adminDb.collection("courses").doc(courseId);
+  const snap = await ref.get();
+  if (!snap.exists) throw new HttpError(404, "Course not found");
+  const course = { id: snap.id, ...(snap.data() as Omit<Course, "id">) };
+
+  if (user.isAdmin) return { user: { ...user, role: "admin" }, course };
+
+  const role = await getStoredRole(user.uid);
+  if (role !== "teacher" || course.teacherId !== user.uid) {
+    throw new HttpError(403, "Forbidden");
+  }
+  return { user: { ...user, role }, course };
 }
 
 export class HttpError extends Error {

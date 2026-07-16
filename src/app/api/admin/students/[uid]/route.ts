@@ -2,6 +2,9 @@ import { NextRequest } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebaseAdmin";
 import { errorResponse, requireAdmin } from "@/lib/serverAuth";
+import type { Role } from "@/lib/types";
+
+const ROLES: Role[] = ["admin", "teacher", "student"];
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +42,7 @@ export async function GET(req: NextRequest, { params }: { params: { uid: string 
         uid: params.uid,
         name: user.name ?? "",
         email: user.email ?? "",
+        role: (user.role as Role | undefined) ?? "student",
         createdAt: Number(user.createdAt ?? 0),
       },
       enrollments: enrolledIds.map((id) => ({
@@ -66,12 +70,22 @@ export async function GET(req: NextRequest, { params }: { params: { uid: string 
   }
 }
 
-// PUT /api/admin/students/[uid] — grant or revoke a course manually
+// PUT /api/admin/students/[uid] — grant/revoke a course, or set a user's role
 export async function PUT(req: NextRequest, { params }: { params: { uid: string } }) {
   try {
     await requireAdmin(req);
     const body = await req.json();
     const action = String(body.action ?? "");
+
+    if (action === "setRole") {
+      const role = String(body.role ?? "") as Role;
+      if (!ROLES.includes(role)) {
+        return Response.json({ error: "bad_request" }, { status: 400 });
+      }
+      await adminDb.collection("users").doc(params.uid).set({ role }, { merge: true });
+      return Response.json({ ok: true });
+    }
+
     const courseId = String(body.courseId ?? "");
     if (!courseId || (action !== "grant" && action !== "revoke")) {
       return Response.json({ error: "bad_request" }, { status: 400 });

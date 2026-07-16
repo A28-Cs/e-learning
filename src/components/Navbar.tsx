@@ -13,6 +13,7 @@ export default function Navbar() {
   const links = [
     { href: "/", label: t("navHome") },
     ...(user ? [{ href: "/my-courses", label: t("navMyCourses") }] : []),
+    ...(profile?.role === "teacher" ? [{ href: "/teacher", label: t("navTeacher") }] : []),
     ...(profile?.isAdmin ? [{ href: "/admin", label: t("navAdmin") }] : []),
   ];
 

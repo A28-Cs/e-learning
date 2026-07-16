@@ -2,6 +2,6 @@
 
 import CourseEditor from "@/components/CourseEditor";
 
-export default function EditCoursePage() {
+export default function EditTeacherCoursePage() {
   return <CourseEditor />;
 }

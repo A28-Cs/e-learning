@@ -12,6 +12,8 @@ export interface Course {
   descAr: string;
   descEn: string;
   categoryId: string;
+  teacherId: string | null;
+  /** Server-computed, read-only: sum of non-free lesson prices. Never set directly by clients. */
   price: number;
   currency: string;
   thumbnail: string;
@@ -29,6 +31,8 @@ export interface Lesson {
   titleEn: string;
   order: number;
   isFree: boolean;
+  /** Forced to 0 when isFree is true. */
+  price: number;
   muxAssetId: string;
   muxPlaybackId?: string;
   duration: number;
@@ -38,10 +42,13 @@ export interface Lesson {
   ratingCount?: number;
 }
 
+export type Role = "admin" | "teacher" | "student";
+
 export interface UserProfile {
   uid: string;
   name: string;
   email: string;
+  role: Role;
   enrolledCourses: string[];
   isAdmin: boolean;
   createdAt: number;
@@ -105,6 +112,67 @@ export interface ActivationCode {
   usedByEmail: string | null;
   createdAt: number;
   usedAt: number | null;
+  restrictedToUid?: string | null;
+  restrictedToEmail?: string | null;
+}
+
+export interface CodeRequest {
+  id: string;
+  teacherId: string;
+  teacherName: string;
+  studentUid: string | null;
+  studentEmail: string;
+  courseId: string;
+  courseTitleAr: string;
+  courseTitleEn: string;
+  status: "pending" | "approved" | "rejected";
+  code: string | null;
+  adminNote: string | null;
+  createdAt: number;
+  reviewedAt: number | null;
+  reviewedBy: string | null;
+}
+
+export interface RemovalRequest {
+  id: string;
+  teacherId: string;
+  teacherName: string;
+  courseId: string;
+  courseTitleAr: string;
+  courseTitleEn: string;
+  studentUid: string;
+  studentEmail: string;
+  reason: string;
+  status: "pending" | "contacted_student" | "approved" | "rejected";
+  adminNote: string | null;
+  createdAt: number;
+  reviewedAt: number | null;
+  reviewedBy: string | null;
+}
+
+export interface TeacherPayout {
+  id: string;
+  teacherId: string;
+  teacherName: string;
+  teacherEmail: string;
+  courseId: string | null;
+  courseTitleAr: string | null;
+  courseTitleEn: string | null;
+  amount: number;
+  currency: string;
+  status: "owed" | "paid";
+  note: string | null;
+  createdAt: number;
+  paidAt: number | null;
+  paidBy: string | null;
+}
+
+export interface EnrollmentCancellation {
+  id: string;
+  uid: string;
+  email: string;
+  courseId: string;
+  createdAt: number;
 }
 
 export interface CourseReview {
