@@ -8,13 +8,17 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     await requireAdmin(req);
-    const [payments, security] = await Promise.all([
+    const [payments, security, codeRequests, teachers] = await Promise.all([
       adminDb.collection("paymentRequests").where("status", "==", "pending").count().get(),
       adminDb.collection("securityEvents").where("seen", "==", false).count().get(),
+      adminDb.collection("codeRequests").where("status", "==", "pending").count().get(),
+      adminDb.collection("users").where("teacherRequest", "==", "pending").count().get(),
     ]);
     return Response.json({
       payments: payments.data().count,
       security: security.data().count,
+      codeRequests: codeRequests.data().count,
+      teachers: teachers.data().count,
     });
   } catch (err) {
     return errorResponse(err);

@@ -1,19 +1,9 @@
 import { NextRequest } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 import { errorResponse, requireAdmin } from "@/lib/serverAuth";
+import { randomActivationCode } from "@/lib/courseHelpers";
 
 export const dynamic = "force-dynamic";
-
-const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no confusing 0/O/1/I
-
-function randomCode(): string {
-  let s = "";
-  for (let i = 0; i < 8; i++) {
-    s += ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
-    if (i === 3) s += "-";
-  }
-  return s;
-}
 
 // GET /api/codes?courseId=... — list codes (admin)
 export async function GET(req: NextRequest) {
@@ -49,7 +39,7 @@ export async function POST(req: NextRequest) {
     const batch = adminDb.batch();
     const created: string[] = [];
     for (let i = 0; i < count; i++) {
-      const code = randomCode();
+      const code = randomActivationCode();
       created.push(code);
       batch.set(adminDb.collection("activationCodes").doc(code), {
         courseId,

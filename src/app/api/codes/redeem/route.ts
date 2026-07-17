@@ -21,7 +21,18 @@ export async function POST(req: NextRequest) {
     const courseId = await adminDb.runTransaction(async (tx) => {
       const codeSnap = await tx.get(codeRef);
       if (!codeSnap.exists || codeSnap.data()!.used) return null;
-      const cid = codeSnap.data()!.courseId as string;
+      const data = codeSnap.data()!;
+      // Codes issued through a teacher request are locked to one student.
+      const restrictUid = data.restrictedToUid as string | null | undefined;
+      const restrictEmail = data.restrictedToEmail as string | null | undefined;
+      if (restrictUid && restrictUid !== user.uid) return "restricted";
+      if (
+        restrictEmail &&
+        restrictEmail.toLowerCase() !== (user.email ?? "").toLowerCase()
+      ) {
+        return "restricted";
+      }
+      const cid = data.courseId as string;
       tx.update(codeRef, {
         used: true,
         usedBy: user.uid,
@@ -40,6 +51,9 @@ export async function POST(req: NextRequest) {
       return cid;
     });
 
+    if (courseId === "restricted") {
+      return Response.json({ error: "code_restricted" }, { status: 403 });
+    }
     if (!courseId) {
       return Response.json({ error: "invalid_code" }, { status: 400 });
     }

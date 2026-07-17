@@ -8,6 +8,8 @@ import { useLang } from "@/context/AppProviders";
 interface Counts {
   payments: number;
   security: number;
+  codeRequests: number;
+  teachers: number;
 }
 
 const POLL_MS = 45_000;
@@ -18,19 +20,31 @@ const POLL_MS = 45_000;
 export default function AdminNotifications() {
   const { t } = useLang();
   const router = useRouter();
-  const [counts, setCounts] = useState<Counts>({ payments: 0, security: 0 });
+  const [counts, setCounts] = useState<Counts>({
+    payments: 0,
+    security: 0,
+    codeRequests: 0,
+    teachers: 0,
+  });
   const prev = useRef<Counts | null>(null);
 
   useEffect(() => {
     let alive = true;
 
+    const alerts: { key: keyof Counts; msg: () => string }[] = [
+      { key: "payments", msg: () => t("notifPayment") },
+      { key: "security", msg: () => t("notifSecurity") },
+      { key: "codeRequests", msg: () => t("notifCodeRequest") },
+      { key: "teachers", msg: () => t("notifTeacher") },
+    ];
+
     async function poll() {
       try {
         const c = await api<Counts>("/api/admin/pending-count");
         if (!alive) return;
-        if (prev.current) {
-          if (c.payments > prev.current.payments) notify(t("notifPayment"));
-          if (c.security > prev.current.security) notify(t("notifSecurity"));
+        const before = prev.current;
+        if (before) {
+          for (const a of alerts) if (c[a.key] > before[a.key]) notify(a.msg());
         }
         prev.current = c;
         setCounts(c);
@@ -57,10 +71,18 @@ export default function AdminNotifications() {
     if (typeof Notification !== "undefined" && Notification.permission === "default") {
       Notification.requestPermission();
     }
-    router.push(counts.security > 0 ? "/admin/security" : "/admin/payment-requests");
+    router.push(destination());
   }
 
-  const total = counts.payments + counts.security;
+  function destination() {
+    if (counts.security > 0) return "/admin/security";
+    if (counts.codeRequests > 0) return "/admin/code-requests";
+    if (counts.teachers > 0) return "/admin/students";
+    return "/admin/payment-requests";
+  }
+
+  const total =
+    counts.payments + counts.security + counts.codeRequests + counts.teachers;
 
   return (
     <button
