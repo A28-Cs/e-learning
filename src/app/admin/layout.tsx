@@ -31,6 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/categories", label: t("adminCategories"), icon: "◈" },
     { href: "/admin/codes", label: t("adminCodes"), icon: "⌘" },
     { href: "/admin/code-requests", label: t("adminCodeRequests"), icon: "⎙" },
+    { href: "/admin/removal-requests", label: t("adminRemovalRequests"), icon: "⊘" },
     { href: "/admin/students", label: t("adminStudents"), icon: "◉" },
     { href: "/admin/security", label: t("adminSecurity"), icon: "◬" },
     { href: "/admin/orders", label: t("adminOrders"), icon: "◎" },
