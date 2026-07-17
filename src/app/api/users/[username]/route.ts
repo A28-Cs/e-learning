@@ -25,6 +25,7 @@ export async function GET(_req: NextRequest, { params }: { params: { username: s
       username: (u.username as string) ?? username,
       bio: (u.bio as string) ?? "",
       photoURL: (u.photoURL as string) ?? "",
+      phone: (u.phone as string) ?? "",
       role,
       createdAt: Number(u.createdAt ?? 0),
     };

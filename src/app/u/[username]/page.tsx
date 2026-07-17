@@ -14,6 +14,7 @@ interface PublicProfile {
   username: string;
   bio: string;
   photoURL: string;
+  phone: string;
   role: Role;
   createdAt: number;
 }
@@ -76,6 +77,26 @@ export default function PublicProfilePage() {
         </span>
         {profile.bio && (
           <p className="mt-4 max-w-lg whitespace-pre-line leading-relaxed text-ink/70">{profile.bio}</p>
+        )}
+        {profile.phone && (
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <span className="text-xs font-semibold text-ink/40">{t("contact")}:</span>
+            <a
+              href={`tel:${profile.phone.replace(/\s+/g, "")}`}
+              className="chip border border-ink/15 text-sm font-semibold hover:border-moss-500 hover:text-moss-600"
+              dir="ltr"
+            >
+              📞 {profile.phone}
+            </a>
+            <a
+              href={`https://wa.me/${profile.phone.replace(/[^\d]/g, "")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="chip bg-moss-500/10 text-sm font-semibold text-moss-600 hover:bg-moss-500/20"
+            >
+              {t("whatsapp")}
+            </a>
+          </div>
         )}
         {since && (
           <p className="mt-4 text-xs text-ink/40">

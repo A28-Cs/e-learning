@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
+  const [phone, setPhone] = useState("");
   const [photoURL, setPhotoURL] = useState("");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -29,6 +30,7 @@ export default function ProfilePage() {
     setName(profile.name ?? "");
     setUsername(profile.username ?? "");
     setBio(profile.bio ?? "");
+    setPhone(profile.phone ?? "");
     setPhotoURL(profile.photoURL ?? "");
   }, [profile]);
 
@@ -40,7 +42,7 @@ export default function ProfilePage() {
     try {
       await api("/api/profile", {
         method: "PUT",
-        body: { name, username: username.trim().toLowerCase(), bio, photoURL },
+        body: { name, username: username.trim().toLowerCase(), bio, phone, photoURL },
       });
       await refreshProfile();
       setNotice(t("profileSaved"));
@@ -105,6 +107,19 @@ export default function ProfilePage() {
           {!profile.username && (
             <p className="mt-1 text-xs text-amber-600">{t("setUsernamePrompt")}</p>
           )}
+        </div>
+
+        <div>
+          <label className="label">{t("phone")}</label>
+          <input
+            className="input"
+            type="tel"
+            dir="ltr"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+20 1x xxxx xxxx"
+          />
+          <p className="mt-1 text-xs text-ink/45">{t("phoneHint")}</p>
         </div>
 
         <div>

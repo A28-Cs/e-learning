@@ -53,6 +53,8 @@ export interface UserProfile {
   username?: string | null;
   bio?: string;
   photoURL?: string;
+  /** Optional contact phone shown on the public profile. */
+  phone?: string;
   /** Set when a user registers as a teacher; role stays "student" until admin approves. */
   teacherRequest?: "pending" | "approved" | "rejected" | null;
   enrolledCourses: string[];

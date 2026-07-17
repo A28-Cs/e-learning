@@ -18,6 +18,7 @@ export async function PUT(req: NextRequest) {
     if (body.name !== undefined) patch.name = String(body.name).trim().slice(0, 80);
     if (body.bio !== undefined) patch.bio = String(body.bio).slice(0, 500);
     if (body.photoURL !== undefined) patch.photoURL = String(body.photoURL);
+    if (body.phone !== undefined) patch.phone = String(body.phone).trim().slice(0, 25);
 
     // Username change needs a uniqueness reservation.
     if (body.username !== undefined) {
