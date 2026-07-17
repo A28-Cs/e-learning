@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
         return {
           uid: d.id,
           name: u.name ?? "",
+          username: (u.username as string | undefined) ?? null,
           email: u.email ?? "",
           role: (u.role as Role | undefined) ?? "student",
           teacherRequest: (u.teacherRequest as string | undefined) ?? null,

@@ -49,6 +49,10 @@ export interface UserProfile {
   name: string;
   email: string;
   role: Role;
+  /** Unique handle (lowercase a-z, 0-9, _). Stored lowercased; enforced via the `usernames` collection. */
+  username?: string | null;
+  bio?: string;
+  photoURL?: string;
   /** Set when a user registers as a teacher; role stays "student" until admin approves. */
   teacherRequest?: "pending" | "approved" | "rejected" | null;
   enrolledCourses: string[];

@@ -11,6 +11,7 @@ type Role = "admin" | "teacher" | "student";
 interface StudentRow {
   uid: string;
   name: string;
+  username: string | null;
   email: string;
   role: Role;
   teacherRequest: string | null;
@@ -61,7 +62,11 @@ export default function AdminStudentsPage() {
       return false;
     }
     if (!q) return true;
-    return s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
+    return (
+      s.name.toLowerCase().includes(q) ||
+      s.email.toLowerCase().includes(q) ||
+      (s.username ?? "").toLowerCase().includes(q)
+    );
   });
 
   const pendingCount = students.filter((s) => s.teacherRequest === "pending").length;
@@ -118,7 +123,23 @@ export default function AdminStudentsPage() {
             <tbody>
               {visible.map((s) => (
                 <tr key={s.uid} className="border-b border-ink/5 last:border-0">
-                  <td className="px-5 py-3 font-semibold">{s.name || "—"}</td>
+                  <td className="px-5 py-3 font-semibold">
+                    {s.username ? (
+                      <a
+                        href={`/u/${s.username}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:text-moss-600"
+                      >
+                        {s.name || "—"}
+                        <span className="block text-xs font-normal text-ink/40" dir="ltr">
+                          @{s.username}
+                        </span>
+                      </a>
+                    ) : (
+                      s.name || "—"
+                    )}
+                  </td>
                   <td className="px-5 py-3 text-xs text-ink/60" dir="ltr">
                     {s.email}
                   </td>
