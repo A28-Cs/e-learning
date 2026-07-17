@@ -1,13 +1,13 @@
 import { NextRequest } from "next/server";
 import { mux } from "@/lib/mux";
-import { errorResponse, requireAdmin } from "@/lib/serverAuth";
+import { errorResponse, requireRole } from "@/lib/serverAuth";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/mux/upload/[id] — poll upload/asset status until playback ID is ready
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await requireAdmin(req);
+    await requireRole(req, ["teacher"]);
     const upload = await mux.video.uploads.retrieve(params.id);
 
     if (!upload.asset_id) {
