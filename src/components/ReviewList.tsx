@@ -14,6 +14,8 @@ interface ReviewItem {
   createdAt: number;
 }
 
+const EDIT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
 export default function ReviewList({
   fetchUrl,
   postUrl,
@@ -51,6 +53,8 @@ export default function ReviewList({
 
   const mine = user ? reviews?.find((r) => r.uid === user.uid) : undefined;
 
+  const canEditMine = !mine || Date.now() - mine.createdAt <= EDIT_WINDOW_MS;
+
   async function submit(rating: number, comment: string) {
     setBusy(true);
     try {
@@ -66,9 +70,21 @@ export default function ReviewList({
     }
   }
 
+  async function removeMine() {
+    if (!confirm(t("confirmDeleteReview"))) return;
+    setBusy(true);
+    try {
+      await api(postUrl, { method: "DELETE" });
+      await load();
+      onSubmitted?.();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
-      {eligible && user && (
+      {eligible && user && canEditMine && (
         <ReviewForm
           key={mine?.uid ?? "new"}
           initialRating={mine?.rating ?? 0}
@@ -77,6 +93,20 @@ export default function ReviewList({
           onSubmit={submit}
           submitLabel={mine ? t("updateReview") : t("submitReview")}
         />
+      )}
+      {eligible && user && mine && (
+        <div className="flex items-center gap-3 text-sm">
+          {!canEditMine && <span className="text-ink/50">{t("reviewEditClosed")}</span>}
+          {canEditMine && (
+            <button
+              onClick={removeMine}
+              disabled={busy}
+              className="font-semibold text-red-600 hover:underline"
+            >
+              {t("deleteReview")}
+            </button>
+          )}
+        </div>
       )}
       {!eligible && ineligibleMessage && (
         <p className="card p-4 text-center text-sm text-ink/50">{ineligibleMessage}</p>

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 import { errorResponse, requireUser } from "@/lib/serverAuth";
-import { submitReview } from "@/lib/reviewHelpers";
+import { deleteReview, submitReview } from "@/lib/reviewHelpers";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +69,28 @@ export async function POST(
       comment,
     });
 
+    return Response.json({ ok: true });
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
+
+// DELETE — author removes their own lesson review (within 7 days)
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string; lessonId: string } }
+) {
+  try {
+    const user = await requireUser(req);
+    const lessonRef = adminDb
+      .collection("courses")
+      .doc(params.id)
+      .collection("lessons")
+      .doc(params.lessonId);
+    await deleteReview({
+      parentRef: lessonRef,
+      reviewDocRef: lessonRef.collection("reviews").doc(user.uid),
+    });
     return Response.json({ ok: true });
   } catch (err) {
     return errorResponse(err);

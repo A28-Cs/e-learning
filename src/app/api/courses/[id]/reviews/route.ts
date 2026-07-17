@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 import { errorResponse, requireUser } from "@/lib/serverAuth";
-import { submitReview } from "@/lib/reviewHelpers";
+import { deleteReview, submitReview } from "@/lib/reviewHelpers";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +49,21 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       comment,
     });
 
+    return Response.json({ ok: true });
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
+
+// DELETE /api/courses/[id]/reviews — author removes their own review (within 7 days)
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const user = await requireUser(req);
+    const courseRef = adminDb.collection("courses").doc(params.id);
+    await deleteReview({
+      parentRef: courseRef,
+      reviewDocRef: courseRef.collection("reviews").doc(user.uid),
+    });
     return Response.json({ ok: true });
   } catch (err) {
     return errorResponse(err);

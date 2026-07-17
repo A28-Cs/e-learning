@@ -36,6 +36,7 @@ export default function CoursePage() {
   const [code, setCode] = useState("");
   const [codeState, setCodeState] = useState<"idle" | "busy" | "ok" | "bad">("idle");
   const [payState, setPayState] = useState<"idle" | "busy" | "error">("idle");
+  const [cancelState, setCancelState] = useState<"idle" | "busy" | "started">("idle");
 
   const paymentsEnabled = process.env.NEXT_PUBLIC_PAYMENTS_ENABLED === "1";
 
@@ -70,6 +71,19 @@ export default function CoursePage() {
   useEffect(() => {
     if (!authLoading) load();
   }, [authLoading, user, load]);
+
+  async function cancelEnrollment() {
+    if (!confirm(t("confirmCancelEnrollment"))) return;
+    setCancelState("busy");
+    try {
+      await api(`/api/courses/${id}/cancel-enrollment`, { method: "POST" });
+      await refreshProfile();
+      await load();
+      setCancelState("idle");
+    } catch (err) {
+      setCancelState((err as Error).message === "already_started" ? "started" : "idle");
+    }
+  }
 
   async function redeem(e: FormEvent) {
     e.preventDefault();
@@ -197,9 +211,25 @@ export default function CoursePage() {
               </p>
 
               {enrolled ? (
-                <p className="mt-4 rounded-xl bg-moss-500/10 px-4 py-3 text-center font-bold text-moss-600">
-                  {t("enrolled")}
-                </p>
+                <>
+                  <p className="mt-4 rounded-xl bg-moss-500/10 px-4 py-3 text-center font-bold text-moss-600">
+                    {t("enrolled")}
+                  </p>
+                  {user && (
+                    <div className="mt-3 text-center">
+                      <button
+                        onClick={cancelEnrollment}
+                        disabled={cancelState === "busy"}
+                        className="text-xs font-semibold text-ink/50 hover:text-red-600 hover:underline"
+                      >
+                        {cancelState === "busy" ? t("loading") : t("cancelEnrollment")}
+                      </button>
+                      {cancelState === "started" && (
+                        <p className="mt-2 text-xs text-red-600">{t("cannotCancelStarted")}</p>
+                      )}
+                    </div>
+                  )}
+                </>
               ) : (
                 <>
                   {paymentsEnabled && course.price > 0 && (
