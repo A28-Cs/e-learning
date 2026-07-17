@@ -271,6 +271,7 @@ const dict = {
   totalOwed: { ar: "إجمالي المستحق", en: "Total owed" },
   totalPaid: { ar: "إجمالي المدفوع", en: "Total paid" },
   noPayouts: { ar: "مفيش أرصدة لسه", en: "No payouts yet" },
+  adminPayouts: { ar: "مدفوعات المدرسين", en: "Teacher Payouts" },
   statCourses: { ar: "كورس", en: "Courses" },
   statStudents: { ar: "طالب", en: "Students" },
   statCodesUsed: { ar: "كود مستخدم", en: "Codes used" },

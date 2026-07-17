@@ -36,6 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/security", label: t("adminSecurity"), icon: "◬" },
     { href: "/admin/orders", label: t("adminOrders"), icon: "◎" },
     { href: "/admin/payment-requests", label: t("adminPaymentRequests"), icon: "🧾" },
+    { href: "/admin/payouts", label: t("adminPayouts"), icon: "💵" },
     { href: "/admin/settings", label: t("adminSettings"), icon: "⚙" },
   ];
 
