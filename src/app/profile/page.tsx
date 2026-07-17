@@ -53,7 +53,9 @@ export default function ProfilePage() {
           ? t("usernameTaken")
           : msg === "invalid_username"
             ? t("usernameInvalid")
-            : msg
+            : msg === "phone_required"
+              ? t("phoneRequiredTeacher")
+              : msg
       );
     } finally {
       setBusy(false);
@@ -110,7 +112,10 @@ export default function ProfilePage() {
         </div>
 
         <div>
-          <label className="label">{t("phone")}</label>
+          <label className="label">
+            {t("phone")}
+            {profile.role === "teacher" && <span className="text-red-500"> *</span>}
+          </label>
           <input
             className="input"
             type="tel"
@@ -118,8 +123,11 @@ export default function ProfilePage() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+20 1x xxxx xxxx"
+            required={profile.role === "teacher"}
           />
-          <p className="mt-1 text-xs text-ink/45">{t("phoneHint")}</p>
+          <p className="mt-1 text-xs text-ink/45">
+            {profile.role === "teacher" ? t("phoneRequiredTeacher") : t("phoneHint")}
+          </p>
         </div>
 
         <div>

@@ -28,6 +28,20 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
     );
   }
 
+  // Teachers must have a contact phone on file (used to arrange payouts)
+  // before they can use the dashboard. Admins are exempt.
+  if (profile?.role === "teacher" && !profile.isAdmin && !profile.phone) {
+    return (
+      <div className="py-24 text-center">
+        <p className="text-lg font-bold">📞</p>
+        <p className="mt-2 text-ink/60">{t("teacherPhoneRequiredNote")}</p>
+        <Link href="/profile" className="btn-primary mt-6">
+          {t("completeProfile")}
+        </Link>
+      </div>
+    );
+  }
+
   const nav = [
     { href: "/teacher", label: t("teacherDashboard"), icon: "◫" },
     { href: "/teacher/courses", label: t("teacherCourses"), icon: "▤" },
