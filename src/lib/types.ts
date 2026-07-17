@@ -199,6 +199,64 @@ export interface Testimonial {
   updatedAt: number;
 }
 
+export type QuestionType = "mcq" | "essay";
+
+export interface ExamQuestion {
+  id: string;
+  type: QuestionType;
+  text: string;
+  points: number;
+  /** MCQ only. */
+  options?: string[];
+  /** MCQ only: index into options of the correct answer. Stripped before sending to students. */
+  correctIndex?: number;
+}
+
+export interface Exam {
+  id: string;
+  courseId: string;
+  teacherId: string;
+  title: string;
+  instructions: string;
+  questions: ExamQuestion[];
+  published: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface ExamAnswer {
+  questionId: string;
+  /** MCQ answer. */
+  selectedIndex?: number | null;
+  /** Essay answer. */
+  text?: string;
+  /** Points the teacher (or auto-grader) awarded for this answer. */
+  awardedPoints?: number;
+}
+
+export interface ExamSubmission {
+  id: string;
+  examId: string;
+  examTitle: string;
+  courseId: string;
+  teacherId: string;
+  studentUid: string;
+  studentName: string;
+  studentEmail: string;
+  answers: ExamAnswer[];
+  /** Auto-graded MCQ points. */
+  autoScore: number;
+  /** Total points available across all questions. */
+  maxScore: number;
+  /** Final score once essays are graded (equals autoScore when there are no essays). */
+  totalScore: number;
+  /** True when every essay question has been graded by the teacher. */
+  graded: boolean;
+  teacherNote: string | null;
+  submittedAt: number;
+  gradedAt: number | null;
+}
+
 export interface CourseProgress {
   courseId: string;
   completedLessons: string[];

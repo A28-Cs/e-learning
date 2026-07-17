@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { api } from "@/lib/apiClient";
 import { useLang } from "@/context/AppProviders";
 import CourseForm from "@/components/admin/CourseForm";
@@ -104,9 +105,14 @@ export default function CourseEditor() {
   return (
     <div className="rise space-y-8">
       <div>
-        <h1 className="mb-6 text-2xl font-extrabold">
-          {t("edit")}: {lang === "ar" ? course.titleAr : course.titleEn}
-        </h1>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-2xl font-extrabold">
+            {t("edit")}: {lang === "ar" ? course.titleAr : course.titleEn}
+          </h1>
+          <Link href={`/teacher/courses/${id}/exams`} className="btn-ghost">
+            {t("manageExams")}
+          </Link>
+        </div>
         <CourseForm course={course} />
       </div>
 

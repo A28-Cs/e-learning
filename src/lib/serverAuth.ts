@@ -53,6 +53,12 @@ export async function getStoredRole(uid: string): Promise<Role> {
   return role ?? "student";
 }
 
+export async function isEnrolled(uid: string, courseId: string): Promise<boolean> {
+  const snap = await adminDb.collection("users").doc(uid).get();
+  const enrolled = (snap.data()?.enrolledCourses ?? []) as string[];
+  return enrolled.includes(courseId);
+}
+
 /** Admin always passes, regardless of the `allowed` list. */
 export async function requireRole(
   req: NextRequest,

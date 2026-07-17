@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth, useLang } from "@/context/AppProviders";
 import { api } from "@/lib/apiClient";
 import CheckoutButton from "@/components/CheckoutButton";
+import CourseExams from "@/components/CourseExams";
 import RatingBadge from "@/components/RatingBadge";
 import ReviewList from "@/components/ReviewList";
 import type { Course, Lesson } from "@/lib/types";
@@ -159,6 +160,8 @@ export default function CoursePage() {
               <p className="text-sm text-ink/50">{t("noItems")}</p>
             )}
           </ol>
+
+          {enrolled && <CourseExams courseId={course.id} />}
 
           <h2 className="mt-12 text-xl font-bold">{t("courseReviews")}</h2>
           <div className="mt-4">
