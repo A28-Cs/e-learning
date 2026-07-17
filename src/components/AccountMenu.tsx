@@ -35,6 +35,7 @@ export default function AccountMenu() {
   const menuLinks = [
     { href: "/profile", label: t("navProfile"), icon: "👤" },
     { href: "/my-courses", label: t("navMyCourses"), icon: "▤" },
+    { href: "/support", label: t("navSupport"), icon: "💬" },
     ...(profile?.role === "teacher"
       ? [{ href: "/teacher", label: t("navTeacher"), icon: "◫" }]
       : []),

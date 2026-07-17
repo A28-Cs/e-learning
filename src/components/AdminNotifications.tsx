@@ -11,6 +11,7 @@ interface Counts {
   codeRequests: number;
   teachers: number;
   removals: number;
+  support: number;
 }
 
 const POLL_MS = 45_000;
@@ -27,6 +28,7 @@ export default function AdminNotifications() {
     codeRequests: 0,
     teachers: 0,
     removals: 0,
+    support: 0,
   });
   const prev = useRef<Counts | null>(null);
 
@@ -39,6 +41,7 @@ export default function AdminNotifications() {
       { key: "codeRequests", msg: () => t("notifCodeRequest") },
       { key: "teachers", msg: () => t("notifTeacher") },
       { key: "removals", msg: () => t("notifRemoval") },
+      { key: "support", msg: () => t("notifSupport") },
     ];
 
     async function poll() {
@@ -81,6 +84,7 @@ export default function AdminNotifications() {
     if (counts.security > 0) return "/admin/security";
     if (counts.codeRequests > 0) return "/admin/code-requests";
     if (counts.removals > 0) return "/admin/removal-requests";
+    if (counts.support > 0) return "/admin/support";
     if (counts.teachers > 0) return "/admin/students";
     return "/admin/payment-requests";
   }
@@ -90,7 +94,8 @@ export default function AdminNotifications() {
     counts.security +
     counts.codeRequests +
     counts.teachers +
-    counts.removals;
+    counts.removals +
+    counts.support;
 
   return (
     <button

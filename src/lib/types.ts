@@ -263,6 +263,30 @@ export interface ExamSubmission {
   gradedAt: number | null;
 }
 
+export interface SupportTicket {
+  id: string;
+  uid: string;
+  name: string;
+  email: string;
+  role: Role;
+  subject: string;
+  status: "open" | "closed";
+  /** True whenever the latest message is from the user (i.e. needs an admin reply). */
+  unreadByAdmin: boolean;
+  messageCount: number;
+  lastMessageAt: number;
+  createdAt: number;
+}
+
+export interface SupportMessage {
+  id: string;
+  senderUid: string;
+  senderName: string;
+  isAdmin: boolean;
+  text: string;
+  createdAt: number;
+}
+
 export interface CourseProgress {
   courseId: string;
   completedLessons: string[];
