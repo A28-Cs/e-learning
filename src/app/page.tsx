@@ -34,57 +34,6 @@ function CountUp({ value }: { value: number }) {
   return <>{n.toLocaleString()}</>;
 }
 
-const testimonials = [
-  {
-    ar: "المحتوى منظم وواضح، وخلصت أول كورس ليا في أسبوع واحد. الشرح عملي ومن غير حشو خالص.",
-    en: "The content is organized and clear — I finished my first course in one week. Practical, zero filler.",
-    nameAr: "أحمد سامي",
-    nameEn: "Ahmed Samy",
-    roleAr: "طالب هندسة",
-    roleEn: "Engineering student",
-  },
-  {
-    ar: "أكتر حاجة عجبتني إن الكورس بيتفتح على أي جهاز والتقدّم بيفضل محفوظ. بكمل من الموبايل في المواصلات.",
-    en: "What I love most: courses open on any device and progress stays saved. I continue from my phone on the go.",
-    nameAr: "سارة محمود",
-    nameEn: "Sara Mahmoud",
-    roleAr: "خريجة تجارة",
-    roleEn: "Business graduate",
-  },
-  {
-    ar: "جربت منصات كتير قبل كده، لكن جودة التصوير والصوت هنا فرق كبير جدًا. حاسس إني قاعد في محاضرة حقيقية.",
-    en: "I tried many platforms before, but the video and audio quality here is a huge difference.",
-    nameAr: "محمد عبد الرحمن",
-    nameEn: "Mohamed Abdelrahman",
-    roleAr: "مصمم جرافيك",
-    roleEn: "Graphic designer",
-  },
-  {
-    ar: "نظام كود التفعيل سهّل عليا الاشتراك من غير فيزا. دفعت فودافون كاش والكورس اتفعّل في نفس اليوم.",
-    en: "The activation-code system made enrolling easy without a card. Paid via Vodafone Cash and got access the same day.",
-    nameAr: "منة الله حسن",
-    nameEn: "Mennatallah Hassan",
-    roleAr: "طالبة إعلام",
-    roleEn: "Media student",
-  },
-  {
-    ar: "الدروس قصيرة ومركزة، فبقدر أذاكر ساعة واحدة يوميًا وأحس بتقدم حقيقي كل أسبوع.",
-    en: "Lessons are short and focused, so one hour a day gives me real progress every week.",
-    nameAr: "كريم فتحي",
-    nameEn: "Karim Fathy",
-    roleAr: "محاسب",
-    roleEn: "Accountant",
-  },
-  {
-    ar: "الدعم بيرد بسرعة وأي مشكلة بتتحل في نفس اليوم. من أكتر المنصات اللي حسيت فيها باهتمام حقيقي بالطالب.",
-    en: "Support replies fast and issues get solved the same day. You can feel they truly care about students.",
-    nameAr: "ياسمين علي",
-    nameEn: "Yasmin Aly",
-    roleAr: "معلمة لغة إنجليزية",
-    roleEn: "English teacher",
-  },
-];
-
 const faqs = [
   {
     qAr: "هل أقدر أبدأ من الصفر من غير خبرة سابقة؟",
@@ -117,8 +66,6 @@ const faqs = [
     aEn: "Our team reviews payment requests quickly — if a code fails, contact us and we will fix it as soon as possible.",
   },
 ];
-
-const MIN_TESTIMONIALS = 6;
 
 export default function HomePage() {
   const { t, lang } = useLang();
@@ -160,6 +107,7 @@ export default function HomePage() {
       ? visible.filter((c) => !c.featured)
       : visible;
 
+  // Only real testimonials from students who completed a course are shown.
   const realItems = realTestimonials.map((r) => ({
     key: `real-${r.uid}`,
     text: r.comment,
@@ -167,18 +115,11 @@ export default function HomePage() {
     role: t("platformStudent"),
     rating: r.rating,
   }));
-  const staticItems = testimonials.map((item, i) => ({
-    key: `static-${i}`,
-    text: lang === "ar" ? item.ar : item.en,
-    name: lang === "ar" ? item.nameAr : item.nameEn,
-    role: lang === "ar" ? item.roleAr : item.roleEn,
-    rating: undefined as number | undefined,
-  }));
-  const blendedTestimonials = [
-    ...realItems,
-    ...staticItems.slice(0, Math.max(0, MIN_TESTIMONIALS - realItems.length)),
-  ];
-  const marqueeItems = [...blendedTestimonials, ...blendedTestimonials];
+  // Duplicate for the seamless marquee loop (and so a couple of reviews still fill the row).
+  const marqueeItems = [...realItems, ...realItems, ...realItems].slice(
+    0,
+    Math.max(realItems.length, realItems.length * 2)
+  );
 
   return (
     <div>
@@ -337,7 +278,8 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* ============ Testimonials marquee ============ */}
+      {/* ============ Testimonials marquee (real reviews only) ============ */}
+      {realItems.length > 0 && (
       <section className="overflow-hidden border-y border-ink/10 bg-white/50 py-16">
         <div className="mx-auto mb-10 max-w-6xl px-4 text-center">
           <h2 className="font-display text-3xl font-extrabold sm:text-4xl">
@@ -375,6 +317,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ============ FAQ ============ */}
       <section className="mx-auto max-w-3xl px-4 py-16">

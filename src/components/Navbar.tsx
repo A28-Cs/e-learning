@@ -4,16 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth, useLang } from "@/context/AppProviders";
 import AdminNotifications from "@/components/AdminNotifications";
+import AccountMenu from "@/components/AccountMenu";
 
 export default function Navbar() {
   const { t, lang, setLang } = useLang();
-  const { user, profile, logout } = useAuth();
+  const { user, profile } = useAuth();
   const pathname = usePathname();
 
   const links = [
     { href: "/", label: t("navHome") },
     ...(user ? [{ href: "/my-courses", label: t("navMyCourses") }] : []),
-    ...(user ? [{ href: "/profile", label: t("navProfile") }] : []),
     ...(profile?.role === "teacher" ? [{ href: "/teacher", label: t("navTeacher") }] : []),
     ...(profile?.isAdmin ? [{ href: "/admin", label: t("navAdmin") }] : []),
   ];
@@ -56,9 +56,7 @@ export default function Navbar() {
             {lang === "ar" ? "EN" : "عربي"}
           </button>
           {user ? (
-            <button onClick={logout} className="btn-ghost !px-4 !py-2 text-xs">
-              {t("logout")}
-            </button>
+            <AccountMenu />
           ) : (
             <>
               <Link href="/login" className="btn-ghost !px-4 !py-2 text-xs">
